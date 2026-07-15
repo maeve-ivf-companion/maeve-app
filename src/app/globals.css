@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+/*
+  Maeve by Maman — brand design system
+  Palette pulled from the existing Maman/Maeve site:
+  deep plum, berry, soft blush, warm off-white. Fraunces (serif) for
+  display, Inter for body.
+*/
+
+@theme {
+  /* Plum (primary brand / dark surfaces) */
+  --color-plum-50: #f8f4fb;
+  --color-plum-100: #e8e0f0;
+  --color-plum-200: #ccbbdd;
+  --color-plum-400: #5a3a7a;
+  --color-plum-600: #3d2459;
+  --color-plum-700: #2b1b3d;
+  --color-plum-900: #1a0f2a;
+
+  /* Berry (accent / calls to action) */
+  --color-berry-300: #f48fb1;
+  --color-berry-400: #e35d8a;
+  --color-berry-500: #c2185b;
+  --color-berry-600: #8e244d;
+
+  /* Blush (soft backgrounds) */
+  --color-blush-50: #fff0f5;
+  --color-blush-100: #fce4ec;
+
+  /* Warm neutrals */
+  --color-cream: #fafaf9;
+  --color-sand: #f8f4fb;
+  --color-ink: #1a0f2a;
+  --color-muted: #5a4a72;
+  --color-faint: #9090aa;
+  --color-line: #e8e0f0;
+
+  /* Feedback */
+  --color-grow-500: #4caf50;
+  --color-grow-300: #81c784;
+
+  /* Portal accent hues */
+  --color-portal-vent: #c2185b;
+  --color-portal-cry: #5a6db5;
+  --color-portal-laugh: #e8923a;
+  --color-portal-humour: #7a4b9e;
+
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.75rem;
+}
+
+:root {
+  --background: #fafaf9;
+  --foreground: #1a0f2a;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.015em;
+}
+
+/* Soft brand gradient used on hero + auth surfaces */
+.bg-brand-gradient {
+  background: linear-gradient(155deg, #2b1b3d 0%, #3d2459 45%, #8e244d 100%);
+}
+
+.bg-blush-gradient {
+  background: linear-gradient(160deg, #fff0f5 0%, #f8f4fb 100%);
+}
+
+.text-gradient {
+  background: linear-gradient(120deg, #c2185b 0%, #8e244d 60%, #5a3a7a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Gentle entrance */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-rise {
+  animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+::selection {
+  background: #f48fb1;
+  color: #1a0f2a;
+}
