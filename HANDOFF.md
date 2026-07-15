@@ -228,8 +228,9 @@ supabase/migrations/
   confirmation, magic link, password reset, and change-email messages. They live
   in `supabase/email-templates/`. **They are pasted into the Supabase dashboard
   by hand and are not applied by any deploy**, so the dashboard is the live copy
-  and this folder is the source of truth. Read that folder's README before
-  editing one.
+  and this folder is the source of truth. **Written but not yet applied**:
+  Supabase requires custom SMTP before it will let you edit a template, and SMTP
+  needs a sending domain Maeve owns. See that folder's README.
 
 - **Bilingual EN/FR.** Full toggle, persisted per visitor. See section 9.
 
@@ -406,10 +407,14 @@ and both are easy to reintroduce.
 
 ### Product roadmap
 
-- [ ] **Connect a real SMTP provider** in Supabase, Project Settings,
-      Authentication, SMTP Settings. The built-in email service is rate limited
-      and intended for development. Confirmation emails will start failing to
-      arrive once volume picks up.
+- [ ] **Decide Maeve's domain, then connect SMTP.** These are the same task.
+      Auth email cannot send from a `.vercel.app` URL, so branded email needs a
+      domain Maeve or Maman owns (`mamanbiomedical.ca` works today; a dedicated
+      Maeve domain is better long term and also replaces the `.vercel.app` URL).
+      Until SMTP is configured, Supabase will not let you apply the branded
+      templates in `supabase/email-templates/`, and the built-in email service
+      stays rate limited and best-effort. Full walkthrough in that folder's
+      README.
 - [ ] Optional: turn off Supabase "Confirm email" for frictionless demo sign-ups.
 - [ ] Ongoing UX/UI polish as user feedback comes in.
 - [ ] Partner notification delivery beyond in-app (email or SMS) if desired.

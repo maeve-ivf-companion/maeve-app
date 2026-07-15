@@ -9,11 +9,26 @@ project: if someone edits a template in the dashboard, this folder will not know
 **If you change an email, change it here too**, or the next person will paste a
 stale version over your work.
 
+## You need custom SMTP first
+
+**Supabase will not let you edit these templates until a custom SMTP server is
+configured.** If you try, the dashboard tells you to enable SMTP.
+
+This is not a limitation to route around, it is deliberate. Supabase's built-in
+email service sends from a shared Supabase domain. Letting any project put
+arbitrary HTML in a message sent from a shared sender would make it a
+ready-made phishing tool. Owning the sender is the price of customising the
+message. Supabase's own docs also describe the built-in service as rate limited
+and best-effort, not for production.
+
+So configuring SMTP is required for branded email, and is something you need
+before real users regardless. See "Setting up SMTP" below.
+
 ## How to apply them
 
-For each file below: Supabase dashboard, **Authentication**, **Emails**, pick the
-template, switch the editor to the **source / HTML** view, delete what is there,
-paste the file's contents, Save.
+Once SMTP is configured: Supabase dashboard, **Authentication**, **Emails**, pick
+the template, switch the editor to the **source / HTML** view, delete what is
+there, paste the file's contents, Save.
 
 | File | Supabase template | Used by |
 | --- | --- | --- |
@@ -83,10 +98,41 @@ the link that actually does the thing.
 - `{{ .Email }}` the current address
 - `{{ .NewEmail }}` the new address, change-email template only
 
-## Before sending real volume
+## Setting up SMTP
 
-Supabase's built-in email service is rate limited and meant for development, not
-production. It is fine for demos and early testing. Before real users arrive,
-connect a proper SMTP provider in **Project Settings, Authentication, SMTP
-Settings**, or confirmation emails will start silently failing to arrive at the
-worst possible moment.
+This is a prerequisite for everything above, and it needs a decision that is not
+purely technical.
+
+**You cannot send from `maeve-app-two.vercel.app`.** Sending email as a domain
+requires DNS records (SPF and DKIM) that prove you are allowed to, and nobody can
+add DNS records to a `vercel.app` subdomain. So the sending domain has to be a
+domain Maeve or Maman actually owns.
+
+Two options:
+
+1. **Send from `mamanbiomedical.ca`**, for example `maeve@mamanbiomedical.ca` or
+   `hello@mamanbiomedical.ca`. Works today, and needs DNS access to that domain.
+   The tradeoff is that Maeve's auth email arrives branded as Maman.
+2. **Register a Maeve domain**, for example `maevebymaman.com`. Better long term:
+   it gives Maeve a real address instead of a `.vercel.app` URL, and the same
+   domain then serves both the site and the email. This is the direction to go if
+   Maeve is a product rather than an experiment.
+
+Either way, the steps are the same:
+
+1. Pick a provider. Resend, Postmark, Brevo, SendGrid, and AWS SES all work. For
+   a project this size any of them is fine and most have a free tier that covers
+   early volume.
+2. Verify the sending domain in that provider, which means adding the SPF and
+   DKIM DNS records it gives you. **Until the domain is verified, mail either
+   does not send or lands in spam.** This is the step that actually takes time,
+   because DNS changes are not instant.
+3. Put the provider's SMTP host, port, user, and password into Supabase,
+   **Project Settings, Authentication, SMTP Settings**, along with the sender
+   address and sender name (`Maeve by Maman` is the obvious choice).
+4. Now the templates above become editable.
+
+**Use the client's own provider account, not a DigitalFlow one.** Same reasoning
+as the Anthropic key: the billing, the domain reputation, and the deliverability
+history should belong to Maeve from day one. A sending domain's reputation is
+built over years and is not transferable.
