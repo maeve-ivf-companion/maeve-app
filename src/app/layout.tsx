@@ -16,7 +16,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Maeve — the IVF companion that finally gets it",
+  title: "Maeve, the IVF companion that finally gets it",
   description:
     "Maeve by Maman. The first companion built ground-up for the IVF journey: hormone tracking, a partner who shows up, and space for every kind of day. Bilingual EN/FR.",
 };

@@ -18,8 +18,8 @@ Vercel's environment variables, and in the Supabase dashboard. See
 | **Supabase project ID / ref** | `vnkoijsaqerxnwvcvjrq` |
 | **Supabase dashboard** | https://supabase.com/dashboard/project/vnkoijsaqerxnwvcvjrq |
 | **Supabase URL** | `https://vnkoijsaqerxnwvcvjrq.supabase.co` |
-| **Vercel project** | not created yet, see [SETUP.md](SETUP.md) step 5 |
-| **Live URL** | not deployed yet |
+| **Vercel project** | created via the same Google login, auto-deploys from `main` |
+| **Live URL** | https://maeve-app-two.vercel.app |
 | **Supabase URL (env value)** | `https://vnkoijsaqerxnwvcvjrq.supabase.co` |
 
 ## How the logins chain together
@@ -27,12 +27,18 @@ Vercel's environment variables, and in the Supabase dashboard. See
 Read this before you change any account ownership. It matters more than it looks.
 
 ```
-Google account  ->  GitHub (maeve-ivf-companion)  ->  Supabase (sign in with GitHub)
+                 -> GitHub (maeve-ivf-companion) -> Supabase (sign in with GitHub)
+Google account  |
+                 -> Vercel (sign in with Google)
 ```
 
-Supabase is signed into **via GitHub**, and GitHub was signed up **via Google**.
-So the Google account at the root of that chain controls everything downstream.
-Whoever owns that Google account effectively owns the infrastructure.
+All three services trace back to **one Google account**. Supabase is signed into
+via GitHub, GitHub was signed up via Google, and Vercel was signed up via Google
+directly. So the Google account at the root of that chain controls the entire
+infrastructure. Whoever owns it owns Maeve's GitHub, database, and hosting.
+
+That is a clean setup and easy to hand over as a single bundle, which is the
+upside. The downside is that it is a single point of failure.
 
 If Maeve is going to outlive any one person's personal Google account, move that
 root to an account the company owns (for example a
