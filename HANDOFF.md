@@ -209,6 +209,16 @@ supabase/migrations/
   (minimum viable data), with an audit trail written to the `consents` table.
   Code: `OnboardingFlow.tsx`.
 
+- **Signup consent.** A required tick to accept the Terms and Privacy Policy
+  (which link to real pages at `/terms` and `/privacy`), and a separate optional
+  opt-in to Maman Biomedical marketing, unchecked by default per CASL. Both are
+  recorded with a timestamp. Code: `AuthForm.tsx`, `0003_signup_consent.sql`, and
+  see section 7 for why the trigger does the writing.
+
+- **Legal pages.** Bilingual Terms and Privacy Policy at `/terms` and `/privacy`.
+  Content lives in `src/lib/legal/en.ts` and `fr.ts`, rendered by
+  `components/legal/LegalPage.tsx`. Currently **draft, pending legal review**.
+
 - **Bilingual EN/FR.** Full toggle, persisted per visitor. See section 9.
 
 ---
@@ -216,8 +226,9 @@ supabase/migrations/
 ## 7. Database schema & RLS
 
 All SQL lives in `supabase/migrations/`. To build the database on a fresh
-Supabase project: SQL Editor, paste `0001_init.sql`, Run. Then `0002_seed_videos.sql`,
-Run. Order matters.
+Supabase project, run them in the SQL Editor **in numbered order**:
+`0001_init.sql`, then `0002_seed_videos.sql`, then `0003_signup_consent.sql`.
+Order matters.
 
 **Every table has Row Level Security enabled.** Since the anon key is public, RLS
 is the actual security boundary. Treat these policies as the most
@@ -225,7 +236,7 @@ safety-critical code in the project.
 
 | Table | What it holds | Access rule |
 | --- | --- | --- |
-| `profiles` | One row per auth user: role, display name, language, `invite_code`, `paired_with`, `partner_sharing_level`, consent flags, `onboarded`. Auto-created on signup by the `handle_new_user` trigger. | Read your own row or your partner's. Update only your own. |
+| `profiles` | One row per auth user: role, display name, language, `invite_code`, `paired_with`, `partner_sharing_level`, consent flags, `terms_accepted_at`, `marketing_opt_in`, `onboarded`. Auto-created on signup by the `handle_new_user` trigger. | Read your own row or your partner's. Update only your own. |
 | `portal_posts` | Vent / Laugh / Cry entries. | Read your own or anything marked `community`. Write, update, delete only your own. |
 | `hormone_logs` | The most sensitive data in the app. | **Owner only.** Partners never see this, at any sharing level. |
 | `schedule_events` | Injections, appointments, trigger windows, bloodwork, transfers. | Owner full access. A paired partner can read **only** if the patient's `partner_sharing_level` is `schedule` or `full`. |
@@ -247,6 +258,30 @@ safety-critical code in the project.
 `mood`, `schedule`, and `full`. The design intent is that the partner sees
 insights, not raw data, unless the patient explicitly opens things up. Note that
 `hormone_logs` is owner-only regardless of level.
+
+### Signup consent, and why it goes through the trigger
+
+`0003_signup_consent.sql` records two things at signup: acceptance of the Terms
+and Privacy Policy (required), and opt-in to Maman Biomedical marketing
+(optional, unchecked by default).
+
+**This deliberately does not use a client-side insert.** When Supabase "Confirm
+email" is on, `supabase.auth.signUp()` returns **no session**. The user is not
+authenticated yet, so `auth.uid()` is null and RLS refuses any insert into
+`consents`. Instead the client passes consent in `signUp`'s `options.data`,
+Supabase stores that on `auth.users.raw_user_meta_data`, and the security-definer
+`handle_new_user` trigger reads it at user-creation time. That captures consent
+at the moment it was given, even for someone who never confirms their email.
+
+If you add another signup-time consent, extend the trigger. Do not be tempted to
+write it from the client after signup: it will work in testing with email
+confirmation off, and silently record nothing in production with it on.
+
+**CASL note** (this is a Canadian company sending Canadian commercial email): the
+marketing box must stay **unchecked by default**, since a pre-ticked box is not
+valid express consent. The trigger records the answer either way, including a
+decline, because evidence that someone said no is as useful as evidence they said
+yes. Consent scopes written at signup are `terms` and `marketing`.
 
 ---
 
@@ -343,7 +378,12 @@ and both are easy to reintroduce.
 
 ### Before real users, not optional
 
-- [ ] **Privacy policy and terms of service.** Not written.
+- [ ] **Get the Terms and Privacy Policy reviewed by a lawyer.** Starter drafts
+      now exist at `/terms` and `/privacy` (`src/lib/legal/en.ts` and `fr.ts`),
+      written to describe what the app actually does so counsel has something
+      concrete to red-line. **They carry a visible draft banner. Do not remove it
+      until a lawyer has signed the text off.** Signup requires agreeing to
+      these, so the quality of that text is now load-bearing.
 - [ ] **PIPEDA / HIPAA review of the data layer.** This is fertility and hormone
       data.
 - [ ] **Independent review of the RLS policies.** They are the whole security

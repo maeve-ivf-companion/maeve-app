@@ -65,7 +65,11 @@ Supabase is the database and the login system.
    the Row Level Security policies, the signup trigger, and the pairing function.
 5. New query again. Open `supabase/migrations/0002_seed_videos.sql`, paste, and
    **Run**. This fills the Learn library with 8 starter videos.
-6. Go to **Settings, API**. Copy two values, you will need them in step 3:
+6. New query again. Open `supabase/migrations/0003_signup_consent.sql`, paste,
+   and **Run**. This adds the signup consent columns and updates the signup
+   trigger to record them. **Run this before anyone signs up**, or the consent
+   captured on the signup form is silently discarded.
+7. Go to **Settings, API**. Copy two values, you will need them in step 3:
    - **Project URL** (looks like `https://xxxxxxxx.supabase.co`)
    - **anon / public key** (a long string starting `eyJ...`)
 
