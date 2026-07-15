@@ -90,6 +90,8 @@ export const en = {
     orContinue: "or",
     errorGeneric: "Something went wrong. Please try again.",
     checkEmail: "Confirm your email to finish setting up your account.",
+    showPassword: "Show password",
+    hidePassword: "Hide password",
     termsPrefix: "I agree to Maeve's",
     termsLink: "Terms of Service",
     termsAnd: "and",

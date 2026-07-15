@@ -219,6 +219,18 @@ supabase/migrations/
   Content lives in `src/lib/legal/en.ts` and `fr.ts`, rendered by
   `components/legal/LegalPage.tsx`. Currently **draft, pending legal review**.
 
+- **Password show/hide.** Every password field has an eye toggle so people can
+  catch their own typos. Code: `PasswordInput` in `components/ui.tsx`, used by
+  `AuthForm.tsx` and `AccountManager.tsx`. Labels are passed in as props rather
+  than hardcoded, to keep the component bilingual.
+
+- **Branded auth emails.** Maeve-styled replacements for Supabase's default
+  confirmation, magic link, password reset, and change-email messages. They live
+  in `supabase/email-templates/`. **They are pasted into the Supabase dashboard
+  by hand and are not applied by any deploy**, so the dashboard is the live copy
+  and this folder is the source of truth. Read that folder's README before
+  editing one.
+
 - **Bilingual EN/FR.** Full toggle, persisted per visitor. See section 9.
 
 ---
@@ -394,6 +406,10 @@ and both are easy to reintroduce.
 
 ### Product roadmap
 
+- [ ] **Connect a real SMTP provider** in Supabase, Project Settings,
+      Authentication, SMTP Settings. The built-in email service is rate limited
+      and intended for development. Confirmation emails will start failing to
+      arrive once volume picks up.
 - [ ] Optional: turn off Supabase "Confirm email" for frictionless demo sign-ups.
 - [ ] Ongoing UX/UI polish as user feedback comes in.
 - [ ] Partner notification delivery beyond in-app (email or SMS) if desired.

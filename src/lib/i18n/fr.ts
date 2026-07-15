@@ -92,6 +92,8 @@ export const fr: Dictionary = {
     orContinue: "ou",
     errorGeneric: "Une erreur s'est produite. Veuillez réessayer.",
     checkEmail: "Confirmez votre courriel pour finaliser votre compte.",
+    showPassword: "Afficher le mot de passe",
+    hidePassword: "Masquer le mot de passe",
     termsPrefix: "J'accepte les",
     termsLink: "Conditions d'utilisation",
     termsAnd: "et la",

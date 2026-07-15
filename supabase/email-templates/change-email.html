@@ -1,0 +1,87 @@
+<!-- Maeve: "Change Email Address" email template.
+     Paste into Supabase, Authentication, Emails, Change Email Address.
+     Supabase variables used: {{ .ConfirmationURL }}, {{ .NewEmail }}
+     See README.md in this folder before editing. -->
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">Confirm your new email address for Maeve. / Confirmez votre nouvelle adresse courriel pour Maeve.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0;padding:32px 12px;background-color:#fafaf9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">
+  <tr>
+    <td align="center">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;">
+
+        <tr>
+          <td align="center" style="padding:0 0 24px;">
+            <span style="font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:600;color:#2b1b3d;letter-spacing:0.5px;">Maeve</span>
+            <span style="font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#9090aa;"> by Maman</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="background-color:#ffffff;border:1px solid #e8e0f0;border-radius:16px;padding:40px 36px;">
+
+            <h1 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:600;line-height:1.3;color:#1a0f2a;">
+              Confirm your new email
+            </h1>
+            <p style="margin:0 0 20px;font-size:15px;line-height:1.65;color:#5a4a72;">
+              You asked to change the email on your Maeve account to
+              <strong style="color:#2b1b3d;">{{ .NewEmail }}</strong>. Confirm it below and the change takes effect.
+            </p>
+
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;">
+              <tr>
+                <td align="center" style="border-radius:999px;background-color:#c2185b;">
+                  <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:999px;">
+                    Confirm this change
+                  </a>
+                </td>
+              </tr>
+            </table>
+
+            <p style="margin:0;font-size:13px;line-height:1.6;color:#9090aa;">
+              If you did not ask for this, do not tap the button. Your email stays as it is, and it is worth checking that nobody else has access to your account.
+            </p>
+
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:32px 0;">
+              <tr><td style="height:1px;background-color:#e8e0f0;font-size:0;line-height:0;">&nbsp;</td></tr>
+            </table>
+
+            <h2 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:600;line-height:1.3;color:#1a0f2a;">
+              Confirmez votre nouveau courriel
+            </h2>
+            <p style="margin:0 0 20px;font-size:15px;line-height:1.65;color:#5a4a72;">
+              Vous avez demandé de changer le courriel de votre compte Maeve pour
+              <strong style="color:#2b1b3d;">{{ .NewEmail }}</strong>. Confirmez ci-dessous et le changement prendra effet.
+            </p>
+
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;">
+              <tr>
+                <td align="center" style="border-radius:999px;background-color:#c2185b;">
+                  <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:999px;">
+                    Confirmer ce changement
+                  </a>
+                </td>
+              </tr>
+            </table>
+
+            <p style="margin:0;font-size:13px;line-height:1.6;color:#9090aa;">
+              Si vous n'avez rien demandé, ne touchez pas au bouton. Votre courriel restera le même, et il vaut la peine de vérifier que personne d'autre n'a accès à votre compte.
+            </p>
+
+          </td>
+        </tr>
+
+        <tr>
+          <td align="center" style="padding:24px 16px 0;">
+            <p style="margin:0 0 6px;font-size:12px;line-height:1.6;color:#9090aa;">
+              Maeve by Maman Biomedical Inc. Made with care in Canada.
+            </p>
+            <p style="margin:0;font-size:12px;line-height:1.6;color:#9090aa;">
+              Maeve is a companion, not medical care. Always talk to your clinic.<br>
+              Maeve est un compagnon, pas un soin médical. Consultez toujours votre clinique.
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>

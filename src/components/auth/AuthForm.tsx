@@ -6,7 +6,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { useT } from "@/lib/i18n/provider";
-import { Button, Input, Label, Spinner } from "@/components/ui";
+import { Button, Input, Label, PasswordInput, Spinner } from "@/components/ui";
 
 export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
   const t = useT();
@@ -136,15 +136,16 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
         </div>
         <div>
           <Label htmlFor="password">{t.auth.password}</Label>
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             autoComplete={mode === "signup" ? "new-password" : "current-password"}
             required
             minLength={6}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
+            showLabel={t.auth.showPassword}
+            hideLabel={t.auth.hidePassword}
           />
         </div>
 

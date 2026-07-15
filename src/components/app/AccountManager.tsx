@@ -6,7 +6,14 @@ import { createClient } from "@/lib/supabase/client";
 import { useLanguage } from "@/lib/i18n/provider";
 import { PageHeader } from "@/components/app/PageHeader";
 import { LanguageToggle } from "@/components/LanguageToggle";
-import { Button, Card, Input, Label, Spinner } from "@/components/ui";
+import {
+  Button,
+  Card,
+  Input,
+  Label,
+  PasswordInput,
+  Spinner,
+} from "@/components/ui";
 import type { Profile } from "@/lib/supabase/types";
 
 const DATA_TABLES = [
@@ -217,22 +224,24 @@ export function AccountManager() {
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <Label htmlFor="pw">{t.account.newPassword}</Label>
-            <Input
+            <PasswordInput
               id="pw"
-              type="password"
               autoComplete="new-password"
               value={pw}
               onChange={(e) => setPw(e.target.value)}
+              showLabel={t.auth.showPassword}
+              hideLabel={t.auth.hidePassword}
             />
           </div>
           <div>
             <Label htmlFor="pw2">{t.account.confirmPassword}</Label>
-            <Input
+            <PasswordInput
               id="pw2"
-              type="password"
               autoComplete="new-password"
               value={pw2}
               onChange={(e) => setPw2(e.target.value)}
+              showLabel={t.auth.showPassword}
+              hideLabel={t.auth.hidePassword}
             />
           </div>
         </div>

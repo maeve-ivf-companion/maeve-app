@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
 
 type Variant = "primary" | "secondary" | "ghost" | "soft" | "outline";
 type Size = "sm" | "md" | "lg";
@@ -73,6 +73,64 @@ export const Input = forwardRef<
   React.InputHTMLAttributes<HTMLInputElement>
 >(function Input({ className = "", ...props }, ref) {
   return <input ref={ref} className={`${fieldBase} ${className}`} {...props} />;
+});
+
+function EyeIcon({ off }: { off: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-5 w-5"
+      aria-hidden
+    >
+      <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" />
+      <circle cx="12" cy="12" r="3" />
+      {off && <path d="m3 3 18 18" />}
+    </svg>
+  );
+}
+
+/**
+ * Password field with a show/hide toggle, so people can catch their own typos.
+ * Labels are passed in rather than hardcoded, because every string in this app
+ * has to be available in both EN and FR.
+ */
+export const PasswordInput = forwardRef<
+  HTMLInputElement,
+  Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> & {
+    showLabel: string;
+    hideLabel: string;
+  }
+>(function PasswordInput(
+  { className = "", showLabel, hideLabel, ...props },
+  ref
+) {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <div className="relative">
+      <input
+        ref={ref}
+        type={visible ? "text" : "password"}
+        className={`${fieldBase} pr-12 ${className}`}
+        {...props}
+      />
+      <button
+        type="button"
+        onClick={() => setVisible((v) => !v)}
+        aria-label={visible ? hideLabel : showLabel}
+        aria-pressed={visible}
+        title={visible ? hideLabel : showLabel}
+        className="absolute inset-y-0 right-0 flex items-center rounded-r-xl px-3 text-faint transition hover:text-berry-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-berry-400/50"
+      >
+        <EyeIcon off={visible} />
+      </button>
+    </div>
+  );
 });
 
 export const Textarea = forwardRef<
