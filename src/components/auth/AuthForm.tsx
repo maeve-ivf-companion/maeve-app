@@ -16,6 +16,9 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  // CASL: express consent must be an opt-in. Never default this to true.
+  const [marketingOptIn, setMarketingOptIn] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -23,6 +26,25 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL ??
     (typeof window !== "undefined" ? window.location.origin : "");
+
+  // Consent rides along in signUp's options.data, which Supabase stores on
+  // auth.users.raw_user_meta_data. The handle_new_user trigger reads it and
+  // writes the profile columns and the consents audit rows. It has to work this
+  // way: with email confirmation on there is no session at signup, so the client
+  // cannot insert into `consents` itself (RLS, auth.uid() is null).
+  const signupMeta = {
+    terms_accepted: true,
+    marketing_opt_in: marketingOptIn,
+  };
+
+  /** Returns false and shows an error if signup consent is missing. */
+  function consentBlocked() {
+    if (mode === "signup" && !termsAccepted) {
+      setError(t.auth.termsRequired);
+      return true;
+    }
+    return false;
+  }
 
   async function handlePassword(e: React.FormEvent) {
     e.preventDefault();
@@ -32,6 +54,7 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
       setError("Supabase isn't connected yet.");
       return;
     }
+    if (consentBlocked()) return;
     setLoading(true);
     const supabase = createClient();
     try {
@@ -39,7 +62,10 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: `${siteUrl}/auth/callback?next=/onboarding` },
+          options: {
+            emailRedirectTo: `${siteUrl}/auth/callback?next=/onboarding`,
+            data: signupMeta,
+          },
         });
         if (error) throw error;
         if (data.session) {
@@ -75,12 +101,18 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
       setError(t.auth.errorGeneric);
       return;
     }
+    if (consentBlocked()) return;
     setLoading(true);
     const supabase = createClient();
     const redirect = mode === "signup" ? "/onboarding" : next;
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${siteUrl}/auth/callback?next=${redirect}` },
+      options: {
+        emailRedirectTo: `${siteUrl}/auth/callback?next=${redirect}`,
+        // Magic link creates the user too, so consent must ride along here as
+        // well, or a magic-link signup would land with no consent recorded.
+        ...(mode === "signup" ? { data: signupMeta } : {}),
+      },
     });
     setLoading(false);
     if (error) setError(t.auth.errorGeneric);
@@ -116,10 +148,61 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
           />
         </div>
 
+        {mode === "signup" && (
+          <div className="space-y-3 pt-1">
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                required
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="mt-0.5 h-5 w-5 shrink-0 accent-berry-500"
+              />
+              <span className="text-sm text-plum-700">
+                {t.auth.termsPrefix}{" "}
+                <Link
+                  href="/terms"
+                  target="_blank"
+                  className="font-semibold text-berry-500 underline hover:text-berry-600"
+                >
+                  {t.auth.termsLink}
+                </Link>{" "}
+                {t.auth.termsAnd}{" "}
+                <Link
+                  href="/privacy"
+                  target="_blank"
+                  className="font-semibold text-berry-500 underline hover:text-berry-600"
+                >
+                  {t.auth.privacyLink}
+                </Link>
+                .
+              </span>
+            </label>
+
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                checked={marketingOptIn}
+                onChange={(e) => setMarketingOptIn(e.target.checked)}
+                className="mt-0.5 h-5 w-5 shrink-0 accent-berry-500"
+              />
+              <span className="text-sm text-muted">
+                {t.auth.marketingLabel}{" "}
+                <span className="text-faint">{t.auth.marketingHint}</span>
+              </span>
+            </label>
+          </div>
+        )}
+
         {error && <p className="text-sm text-berry-500">{error}</p>}
         {message && <p className="text-sm text-grow-500">{message}</p>}
 
-        <Button type="submit" size="lg" className="w-full" disabled={loading}>
+        <Button
+          type="submit"
+          size="lg"
+          className="w-full"
+          disabled={loading || (mode === "signup" && !termsAccepted)}
+        >
           {loading && <Spinner />}
           {mode === "signup" ? t.auth.signUp : t.auth.signIn}
         </Button>

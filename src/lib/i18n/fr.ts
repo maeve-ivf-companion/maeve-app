@@ -92,6 +92,15 @@ export const fr: Dictionary = {
     orContinue: "ou",
     errorGeneric: "Une erreur s'est produite. Veuillez réessayer.",
     checkEmail: "Confirmez votre courriel pour finaliser votre compte.",
+    termsPrefix: "J'accepte les",
+    termsLink: "Conditions d'utilisation",
+    termsAnd: "et la",
+    privacyLink: "Politique de confidentialité",
+    termsRequired:
+      "Veuillez accepter les Conditions d'utilisation et la Politique de confidentialité pour continuer.",
+    marketingLabel:
+      "Envoyez-moi des nouvelles de Maman Biomedical sur Maeve, des ressources sur la FIV et les nouveautés.",
+    marketingHint: "Facultatif. Vous pouvez vous désabonner à tout moment.",
   },
   onboarding: {
     title: "Configurons votre Maeve",

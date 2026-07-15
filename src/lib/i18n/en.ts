@@ -90,6 +90,15 @@ export const en = {
     orContinue: "or",
     errorGeneric: "Something went wrong. Please try again.",
     checkEmail: "Confirm your email to finish setting up your account.",
+    termsPrefix: "I agree to Maeve's",
+    termsLink: "Terms of Service",
+    termsAnd: "and",
+    privacyLink: "Privacy Policy",
+    termsRequired:
+      "Please agree to the Terms of Service and Privacy Policy to continue.",
+    marketingLabel:
+      "Send me updates from Maman Biomedical about Maeve, IVF resources, and new features.",
+    marketingHint: "Optional. You can unsubscribe at any time.",
   },
   onboarding: {
     title: "Let's set up your Maeve",

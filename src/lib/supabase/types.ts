@@ -31,6 +31,11 @@ export type Profile = {
   consent_core: boolean;
   consent_journey: boolean;
   consent_health: boolean;
+  /** Set by the signup trigger from signUp metadata. Null means never accepted. */
+  terms_accepted_at: string | null;
+  /** CASL express consent to Maman commercial messages. Only ever true by explicit tick. */
+  marketing_opt_in: boolean;
+  marketing_opt_in_at: string | null;
   onboarded: boolean;
   created_at: string;
   updated_at: string;
