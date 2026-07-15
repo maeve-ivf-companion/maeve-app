@@ -59,10 +59,8 @@ the project is not one forgotten password away from being unreachable.
       dashboard table editor is protected by default. Good setting to leave on.)
 - [x] Migrations run: `0001_init.sql` then `0002_seed_videos.sql`, both succeeded.
       8 tables live with RLS, 8 seed videos.
-- [ ] **`0003_signup_consent.sql` not run yet.** Added after the first two. Must
-      be applied before anyone signs up, or the terms and marketing consent from
-      the signup form is silently dropped (the trigger that stores it does not
-      exist yet).
+- [x] `0003_signup_consent.sql` run, succeeded. Signup consent columns and the
+      updated trigger are live.
 - [x] Code pushed to `main`
 - [ ] Vercel project created and env vars set
 - [ ] Supabase auth URLs pointed at the live Vercel URL
