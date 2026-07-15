@@ -20,6 +20,7 @@ Vercel's environment variables, and in the Supabase dashboard. See
 | **Supabase URL** | `https://vnkoijsaqerxnwvcvjrq.supabase.co` |
 | **Vercel project** | not created yet, see [SETUP.md](SETUP.md) step 5 |
 | **Live URL** | not deployed yet |
+| **Supabase URL (env value)** | `https://vnkoijsaqerxnwvcvjrq.supabase.co` |
 
 ## How the logins chain together
 
@@ -50,14 +51,38 @@ the project is not one forgotten password away from being unreachable.
       `supabase/migrations/` also enable RLS explicitly on every table, so this
       changes nothing about the app, it just means anything added later via the
       dashboard table editor is protected by default. Good setting to leave on.)
-- [ ] Migrations run (`0001_init.sql`, then `0002_seed_videos.sql`)
-- [ ] Anthropic API key created
-- [ ] Code pushed to the repo
+- [x] Migrations run: `0001_init.sql` then `0002_seed_videos.sql`, both succeeded.
+      8 tables live with RLS, 8 seed videos.
+- [x] Code pushed to `main`
 - [ ] Vercel project created and env vars set
 - [ ] Supabase auth URLs pointed at the live Vercel URL
+- [ ] **Anthropic API key created** (see below, waiting on the client's account)
 - [ ] End-to-end verification, including two-device partner pairing
 
 The remaining steps, in order, are in [SETUP.md](SETUP.md).
+
+### The Anthropic key is not blocking
+
+The app is deliberately built to run without `ANTHROPIC_API_KEY`. Every AI route
+catches the missing key and returns curated fallback content instead of erroring.
+See [HANDOFF.md](HANDOFF.md) section 8.
+
+So Maeve can be deployed and demoed **right now** with the other three variables
+set. The three AI features (the partner emotional brief, the hormone
+interpretation, and the Learn what-if answers) will return sensible canned
+content rather than live Claude responses.
+
+When the client's Anthropic key exists: paste it into Vercel's environment
+variables and redeploy. Nothing in the code changes. **The tell that it worked:**
+log a hormone reading and the interpretation reads specific to your number rather
+than generic.
+
+### Two GitHub accounts, worth knowing
+
+The `maeve-ivf-companion` org is owned by a Google-linked GitHub account. The
+DigitalFlow working account (`irsaliendraDF`) was added as a collaborator so it
+could push. If a push ever 403s with "Permission denied to irsaliendraDF", that
+is the collaborator access having lapsed, not a broken repo.
 
 ## Secrets and where they actually live
 
