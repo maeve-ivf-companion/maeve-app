@@ -7,10 +7,24 @@ Next.js 16 (App Router) + Supabase + Anthropic Claude, deployed on Vercel.
 
 ---
 
+## Maeve is already live
+
+This is not a project waiting to be set up. As of July 15, 2026 it is built,
+deployed, and running:
+
+- **Live app:** https://maeve-app-two.vercel.app
+- **Repo:** https://github.com/maeve-ivf-companion/maeve-app (this folder is a
+  snapshot of it; **the repo is the working copy**, and every push to `main`
+  auto-deploys)
+- **Database:** live, all migrations applied, sign-up and consent verified end to
+  end
+
+Use this zip as a backup and as something to read offline. For actual work, clone
+the repo.
+
 ## Start here
 
-This folder is a complete, self-contained handoff. Everything you need is in it.
-Read in this order:
+Everything you need is in this folder. Read in this order:
 
 | Doc | What it is |
 | --- | --- |
@@ -70,12 +84,24 @@ in [SETUP.md](SETUP.md).
 
 ## Important notes about this handoff folder
 
-- **No secrets are included.** `.env.local` was deliberately left out. You will
-  create your own keys in [SETUP.md](SETUP.md).
-- **No git history is included.** This is a clean starting point. Run `git init`
-  and push to your own repo, per [SETUP.md](SETUP.md).
-- **No `node_modules`.** Run `npm install` to restore them. `package-lock.json`
-  is included, so you will get the exact same dependency versions we built with.
+- **No secrets are included.** `.env.local` was deliberately left out, and no key
+  from the build travels in this zip. The live values are already set in Vercel's
+  environment variables. See [PROJECT-DETAILS.md](PROJECT-DETAILS.md) for where
+  each secret lives.
+- **No git history and no `node_modules`.** Both live in the repo. Run
+  `npm install` to restore dependencies; `package-lock.json` is included, so you
+  get the exact versions this was built and tested against.
+- **This snapshot can go stale.** The repo is the working copy. If this folder
+  and GitHub ever disagree, GitHub is right.
+- **Three things are done but not switched on**, all waiting on something only
+  Maman can provide. None of them block the app:
+  - **Live AI** needs an Anthropic API key. Until then the three AI features
+    return prepared content instead of live Claude responses.
+  - **Branded auth emails** are written and sitting in
+    `supabase/email-templates/`, but Supabase will not apply them until custom
+    SMTP is configured, which needs a domain Maeve owns.
+  - **The Terms and Privacy Policy are drafts** pending legal review, and carry a
+    visible draft banner saying so.
 - **The how-to video URLs are placeholders** pending Maman's own
   clinician-reviewed content. See [HANDOFF.md](HANDOFF.md).
 - **AI output is framed as information, never medical advice.** The safety
