@@ -9,6 +9,11 @@ import { Card, Spinner } from "@/components/ui";
 import { PartnerBrief } from "@/components/app/PartnerBrief";
 import { ScheduleWidget } from "@/components/app/ScheduleWidget";
 import { TrackWidget } from "@/components/app/TrackWidget";
+import { HormoneSnapshot } from "@/components/app/HormoneSnapshot";
+import { QuickMoodCheck } from "@/components/app/QuickMoodCheck";
+import { TodaysChecklist } from "@/components/app/TodaysChecklist";
+import { CupQuestion } from "@/components/app/CupQuestion";
+import { CommunityTeaser } from "@/components/app/CommunityTeaser";
 import type { Profile, ScheduleEvent } from "@/lib/supabase/types";
 
 function greeting(t: ReturnType<typeof useLanguage>["t"]) {
@@ -129,6 +134,21 @@ export function Dashboard() {
           <span className="shrink-0 text-berry-500">→</span>
         </Card>
       </Link>
+
+      {/* Hormone Target snapshot (PDF page 3) */}
+      <HormoneSnapshot />
+
+      {/* Quick mood check (PDF page 3) */}
+      <QuickMoodCheck />
+
+      {/* Today's checklist (PDF page 3) */}
+      <TodaysChecklist />
+
+      {/* What will fill your cup today? (PDF page 3) */}
+      <CupQuestion />
+
+      {/* Bitch about it! community teaser (PDF page 3) */}
+      <CommunityTeaser />
 
       {/* Schedule widget */}
       <ScheduleWidget />

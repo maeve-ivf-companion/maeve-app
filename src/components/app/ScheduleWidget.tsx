@@ -4,28 +4,16 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useLanguage } from "@/lib/i18n/provider";
+import { fmt } from "@/lib/i18n/format";
 import { Button, Card, Input, Select, Spinner } from "@/components/ui";
-import type { EventType, ScheduleEvent } from "@/lib/supabase/types";
+import { EVENT_TYPES as TYPES, EVENT_TYPE_ACCENT as typeAccent } from "@/lib/eventTypes";
+import type { EventType, Mood, ScheduleEvent } from "@/lib/supabase/types";
 
-const TYPES: EventType[] = [
-  "injection",
-  "appointment",
-  "trigger",
-  "bloodwork",
-  "retrieval",
-  "transfer",
-  "other",
+const PING_MOODS: { mood: Mood; emoji: string }[] = [
+  { mood: 1, emoji: "😊" },
+  { mood: 2, emoji: "😐" },
+  { mood: 3, emoji: "😔" },
 ];
-
-const typeAccent: Record<EventType, string> = {
-  injection: "#c2185b",
-  appointment: "#5a6db5",
-  trigger: "#e8923a",
-  bloodwork: "#7a4b9e",
-  retrieval: "#2f8f7a",
-  transfer: "#4caf50",
-  other: "#9090aa",
-};
 
 export function ScheduleWidget() {
   const { t, lang } = useLanguage();
@@ -33,6 +21,7 @@ export function ScheduleWidget() {
   const [events, setEvents] = useState<ScheduleEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [pingFor, setPingFor] = useState<ScheduleEvent | null>(null);
 
   const [title, setTitle] = useState("");
   const [type, setType] = useState<EventType>("appointment");
@@ -76,6 +65,31 @@ export function ScheduleWidget() {
     setSaving(false);
   }
 
+  async function markDone(e: ScheduleEvent) {
+    await supabase
+      .from("schedule_events")
+      .update({ completed_at: new Date().toISOString() })
+      .eq("id", e.id);
+    setEvents((prev) => prev.filter((ev) => ev.id !== e.id));
+    setPingFor(e); // Feeling Ping (PDF page 7): pops up right after a med is marked complete.
+  }
+
+  async function sendPing(mood: Mood) {
+    if (!pingFor) return;
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from("mood_checkins").insert({
+        user_id: user.id,
+        mood,
+        trigger_event_id: pingFor.id,
+        shared_with_partner: true,
+      });
+    }
+    setPingFor(null);
+  }
+
   return (
     <Card className="space-y-4">
       <div className="flex items-center justify-between">
@@ -89,6 +103,25 @@ export function ScheduleWidget() {
           {t.dashboard.viewAll}
         </Link>
       </div>
+
+      {pingFor && (
+        <div className="rounded-xl bg-blush-100 p-3">
+          <p className="mb-2 text-sm font-medium text-plum-700">
+            {fmt(t.partner.feelingPingPrompt, { title: pingFor.title })}
+          </p>
+          <div className="flex justify-between gap-2">
+            {PING_MOODS.map(({ mood, emoji }) => (
+              <button
+                key={mood}
+                onClick={() => sendPing(mood)}
+                className="flex flex-1 items-center justify-center rounded-xl bg-white py-2 text-xl transition hover:bg-blush-50"
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="flex justify-center py-4 text-muted">
@@ -117,6 +150,11 @@ export function ScheduleWidget() {
                   })}
                 </p>
               </div>
+              {e.type === "injection" && (
+                <Button size="sm" variant="soft" onClick={() => markDone(e)}>
+                  {t.common.done}
+                </Button>
+              )}
             </li>
           ))}
         </ul>

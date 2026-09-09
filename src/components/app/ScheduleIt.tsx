@@ -13,27 +13,8 @@ import {
   Spinner,
   Textarea,
 } from "@/components/ui";
+import { EVENT_TYPES as TYPES, EVENT_TYPE_ACCENT as typeAccent } from "@/lib/eventTypes";
 import type { EventType, ScheduleEvent } from "@/lib/supabase/types";
-
-const TYPES: EventType[] = [
-  "injection",
-  "appointment",
-  "trigger",
-  "bloodwork",
-  "retrieval",
-  "transfer",
-  "other",
-];
-
-const typeAccent: Record<EventType, string> = {
-  injection: "#c2185b",
-  appointment: "#5a6db5",
-  trigger: "#e8923a",
-  bloodwork: "#7a4b9e",
-  retrieval: "#2f8f7a",
-  transfer: "#4caf50",
-  other: "#9090aa",
-};
 
 export function ScheduleIt() {
   const { t, lang } = useLanguage();

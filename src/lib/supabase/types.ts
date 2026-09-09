@@ -19,6 +19,17 @@ export type VideoCategory =
   | "medications"
   | "procedures"
   | "emotional";
+export type ProcedureType = "ivf" | "iui" | "egg_freezing" | "fet" | "other";
+export type CommunityTopic =
+  | "currently_stimulating"
+  | "egg_retrieval"
+  | "pregnancy"
+  | "two_week_wait"
+  | "success_stories"
+  | "loss_recovery"
+  | "questions";
+export type Mood = 1 | 2 | 3; // 1 good, 2 neutral, 3 hard
+export type ConnectionMode = "partner" | "mee";
 
 export type Profile = {
   id: string;
@@ -40,6 +51,77 @@ export type Profile = {
   onboarded: boolean;
   created_at: string;
   updated_at: string;
+  // Sign-up intake (PDF page 2), all optional: profile rows created before
+  // this migration, and partner-role rows, simply leave these null.
+  age: number | null;
+  weight_kg: number | null;
+  postal_code: string | null;
+  procedure_type: ProcedureType | null;
+  cycle_number: number | null;
+  procedure_duration_weeks: number | null;
+  notif_opt_in: boolean;
+  happy_thing: string | null;
+  connection_mode: ConnectionMode;
+};
+
+export type Medication = {
+  id: string;
+  user_id: string;
+  hormone: string;
+  name: string;
+  dose: string | null;
+  times: string[];
+  reminder_minutes_before: number;
+  active: boolean;
+  created_at: string;
+};
+
+export type MoodCheckin = {
+  id: string;
+  user_id: string;
+  mood: Mood;
+  trigger_event_id: string | null;
+  shared_with_partner: boolean;
+  created_at: string;
+};
+
+export type CupEntry = {
+  id: string;
+  user_id: string;
+  answer: string;
+  created_at: string;
+};
+
+export type CommunityPost = {
+  id: string;
+  user_id: string;
+  topic: CommunityTopic;
+  body: string;
+  created_at: string;
+};
+
+export type CommunityReply = {
+  id: string;
+  post_id: string;
+  user_id: string;
+  body: string;
+  created_at: string;
+};
+
+export type ChatMessage = {
+  id: string;
+  user_id: string;
+  role: "user" | "assistant";
+  body: string;
+  created_at: string;
+};
+
+export type PartnerNote = {
+  id: string;
+  from_user_id: string;
+  to_user_id: string;
+  body: string;
+  created_at: string;
 };
 
 export type PortalPost = {
@@ -73,6 +155,7 @@ export type ScheduleEvent = {
   notes: string | null;
   reminder: boolean;
   created_at: string;
+  completed_at: string | null;
 };
 
 export type Nudge = {

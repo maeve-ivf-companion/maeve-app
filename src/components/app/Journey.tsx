@@ -8,7 +8,7 @@ import { Card, Spinner } from "@/components/ui";
 import { fmt } from "@/lib/i18n/format";
 import type { LearnVideo, Profile, ScheduleEvent } from "@/lib/supabase/types";
 
-type StageKey =
+export type StageKey =
   | "consultation"
   | "cycleStart"
   | "baselineScan"
@@ -59,7 +59,7 @@ const isSameDay = (a: Date, b: Date) => a.toDateString() === b.toDateString();
  * - Everything else (`baselineScan`, `trigger`, `retrieval`, `transfer`) is
  *   read directly off the matching `schedule_events` row when one exists.
  */
-function deriveStages(profile: Profile | null, events: ScheduleEvent[]): Stage[] {
+export function deriveStages(profile: Profile | null, events: ScheduleEvent[]): Stage[] {
   const now = new Date();
   const cycleStart = profile?.cycle_start_date ? new Date(profile.cycle_start_date) : null;
 
