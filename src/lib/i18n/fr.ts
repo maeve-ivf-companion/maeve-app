@@ -220,6 +220,7 @@ export const fr: Dictionary = {
       appointment: "Rendez-vous de suivi",
       trigger: "Injection déclencheuse",
       bloodwork: "Prise de sang",
+      retrieval: "Ponction ovocytaire",
       transfer: "Transfert",
       other: "Autre",
     },
@@ -268,6 +269,45 @@ export const fr: Dictionary = {
       emotional: "Soutien émotionnel",
     },
     watch: "Regarder",
+  },
+  journey: {
+    title: "Votre parcours",
+    subtitle: "Où vous en êtes, et comment vous y êtes arrivée.",
+    timelineTitle: "Parcours FIV",
+    cycleLabel: "Cycle {n}",
+    startedOn: "débuté le {date}",
+    noCycle:
+      "Ajoutez la date de début de votre cycle dans Compte pour voir votre chronologie.",
+    stages: {
+      consultation: "Consultation",
+      cycleStart: "Début du cycle",
+      baselineScan: "Échographie de base",
+      stimulation: "Stimulation",
+      monitoring: "Suivi",
+      trigger: "Injection déclencheuse",
+      retrieval: "Ponction ovocytaire",
+      transfer: "Transfert",
+      twoWeekWait: "Attente de deux semaines",
+    },
+    statusComplete: "Terminé",
+    statusCurrent: "En cours",
+    dayOfStage: "Jour {n}",
+    dayOfStageTotal: "Jour {n} sur ~{total}",
+    howToTitle: "Vidéos pratiques (médicaments)",
+    selfCareTitle: "Conseils bien-être",
+    selfCare: {
+      meditationTitle: "Méditation pour soulager le stress",
+      meditationBody:
+        "Quelques minutes de calme peuvent aider dans les journées difficiles.",
+      yogaTitle: "Positions de yoga douces",
+      yogaBody:
+        "Mouvements doux et sans risque à essayer pendant la stimulation et l'attente de deux semaines.",
+      nutritionTitle: "Soutien nutritionnel pour la FIV",
+      nutritionBody:
+        "Des idées simples à adopter pendant votre cycle.",
+    },
+    dashboardLink: "Votre parcours",
+    trackLink: "Voir votre parcours et les conseils bien-être",
   },
   settings: {
     title: "Réglages",

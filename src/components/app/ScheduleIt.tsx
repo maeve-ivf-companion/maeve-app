@@ -20,6 +20,7 @@ const TYPES: EventType[] = [
   "appointment",
   "trigger",
   "bloodwork",
+  "retrieval",
   "transfer",
   "other",
 ];
@@ -29,6 +30,7 @@ const typeAccent: Record<EventType, string> = {
   appointment: "#5a6db5",
   trigger: "#e8923a",
   bloodwork: "#7a4b9e",
+  retrieval: "#2f8f7a",
   transfer: "#4caf50",
   other: "#9090aa",
 };

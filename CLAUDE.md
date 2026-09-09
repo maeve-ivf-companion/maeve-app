@@ -16,6 +16,12 @@ fresh GitHub / Supabase / Vercel accounts.
 
 ## The rules that actually matter here
 
+0. **Always build against Anthropic's official Claude Code best practices**
+   (docs.claude.com → Claude Code → Best practices, and the sub-agents docs
+   for anything involving `.claude/agents/`). Explore before planning, plan
+   before coding, verify with `npm run build` before calling anything done.
+   See `AGENTS.md` for the full statement of this rule.
+
 1. **This is Next.js 16, not the Next.js in your training data.** Middleware is
    `src/proxy.ts`, not `middleware.ts`. `cookies()`, `headers()`, and route
    `params` are async. Read `node_modules/next/dist/docs/` before writing

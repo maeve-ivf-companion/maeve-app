@@ -12,6 +12,7 @@ export type EventType =
   | "trigger"
   | "bloodwork"
   | "transfer"
+  | "retrieval"
   | "other";
 export type VideoCategory =
   | "injections"

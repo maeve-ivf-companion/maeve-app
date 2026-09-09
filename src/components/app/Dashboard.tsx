@@ -122,6 +122,14 @@ export function Dashboard() {
         )}
       </Card>
 
+      {/* Journey teaser */}
+      <Link href="/app/journey">
+        <Card className="flex items-center justify-between gap-3 transition hover:border-berry-400">
+          <p className="font-medium text-plum-700">{t.journey.dashboardLink}</p>
+          <span className="shrink-0 text-berry-500">→</span>
+        </Card>
+      </Link>
+
       {/* Schedule widget */}
       <ScheduleWidget />
 

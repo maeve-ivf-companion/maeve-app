@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useLanguage } from "@/lib/i18n/provider";
 import { PageHeader } from "@/components/app/PageHeader";
@@ -190,6 +191,13 @@ export function TrackIt() {
           </div>
         )}
       </Card>
+
+      <Link href="/app/journey">
+        <Card className="mt-4 flex items-center justify-between gap-3 transition hover:border-berry-400">
+          <p className="font-medium text-plum-700">{t.journey.trackLink}</p>
+          <span className="shrink-0 text-berry-500">→</span>
+        </Card>
+      </Link>
 
       {/* History */}
       <h2 className="mb-3 mt-8 font-display text-lg text-plum-700">

@@ -1,4 +1,17 @@
 <!-- BEGIN:nextjs-agent-rules -->
+# Always work per Anthropic's Claude Code best practices
+
+Before starting any nontrivial change: explore the relevant code first, write
+or update a short plan for anything touching more than one file, implement,
+then verify with `npm run build` (and a manual check of the actual page where
+practical) before calling the work done. This is Anthropic's own documented
+workflow (docs.claude.com → Claude Code → Best practices), and it applies to
+every session on this repo, not just this one. If in doubt about a Claude
+Code mechanic (subagents, hooks, skills, permissions), check that
+documentation rather than guessing from general training data, the same way
+section "This is NOT the Next.js you know" below asks you to check the
+bundled Next.js 16 docs rather than assume.
+
 # This is NOT the Next.js you know
 
 This version has breaking changes. APIs, conventions, and file structure may all
