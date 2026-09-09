@@ -114,7 +114,7 @@ function PartnerSide({
 
   return (
     <div className="space-y-6">
-      <h2 className="font-display text-xl text-plum-700">{t.partner.partnerViewTitle}</h2>
+      <h2 className="font-display text-xl text-white">{t.partner.partnerViewTitle}</h2>
       <PartnerBrief role="partner" />
       {partnerName && (
         <p className="text-sm text-muted">{fmt(t.partner.connected, { name: partnerName })}</p>
@@ -185,7 +185,7 @@ function PatientSide({
   return (
     <div className="space-y-6">
       <Card className="space-y-2">
-        <p className="font-display text-lg text-plum-700">{t.partner.patientTitle}</p>
+        <p className="font-display text-lg text-white">{t.partner.patientTitle}</p>
         <p className="text-sm text-muted">{t.partner.patientBody}</p>
       </Card>
 
@@ -198,7 +198,7 @@ function PatientSide({
             className={`rounded-xl border px-3 py-2.5 text-sm font-medium transition ${
               connectionMode === "partner"
                 ? "border-berry-400 bg-blush-100 text-berry-600"
-                : "border-line text-plum-700 hover:border-berry-300"
+                : "border-line text-white hover:border-berry-300"
             }`}
           >
             {t.partner.connectionPartnerOption}
@@ -209,7 +209,7 @@ function PatientSide({
             className={`rounded-xl border px-3 py-2.5 text-sm font-medium transition ${
               connectionMode === "mee"
                 ? "border-berry-400 bg-blush-100 text-berry-600"
-                : "border-line text-plum-700 hover:border-berry-300"
+                : "border-line text-white hover:border-berry-300"
             }`}
           >
             {t.partner.connectionMeeOption}
@@ -247,14 +247,14 @@ function PatientSide({
       {/* Minimal / Maximal share level */}
       <Card className="space-y-3">
         <Label>{t.partner.shareLevelTitle}</Label>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3">
           <button
             onClick={() => setShareLevel(false)}
             className={`rounded-xl border p-4 text-left transition ${
               !isMaximal ? "border-berry-400 bg-blush-50" : "border-line hover:border-berry-300"
             }`}
           >
-            <p className="font-semibold text-plum-700">{t.partner.shareLevelMinimalTitle}</p>
+            <p className="font-semibold text-white">{t.partner.shareLevelMinimalTitle}</p>
             <ul className="mt-2 space-y-1 text-sm text-muted">
               {t.partner.shareLevelMinimalItems.map((item) => (
                 <li key={item}>• {item}</li>
@@ -267,7 +267,7 @@ function PatientSide({
               isMaximal ? "border-berry-400 bg-blush-50" : "border-line hover:border-berry-300"
             }`}
           >
-            <p className="font-semibold text-plum-700">{t.partner.shareLevelMaximalTitle}</p>
+            <p className="font-semibold text-white">{t.partner.shareLevelMaximalTitle}</p>
             <ul className="mt-2 space-y-1 text-sm text-muted">
               {t.partner.shareLevelMaximalItems.map((item) => (
                 <li key={item}>• {item}</li>
@@ -317,7 +317,7 @@ function PatientSide({
         {preview && (
           <div className="rounded-xl bg-plum-50 p-4">
             <p className="text-sm text-muted">{t.partner.briefToday}</p>
-            <p className="mt-1 font-display text-lg text-plum-700">“{preview}”</p>
+            <p className="mt-1 font-display text-lg text-white">“{preview}”</p>
           </div>
         )}
       </Card>
@@ -357,8 +357,8 @@ function SupportChecklist({ profile }: { profile: Profile }) {
 
   return (
     <Card className="space-y-2">
-      <p className="font-display text-lg text-plum-700">{t.partner.checklistTitle}</p>
-      {dayOf && <p className="text-sm text-plum-700">{fmt(t.partner.checklistDayOf, { n: dayOf })}</p>}
+      <p className="font-display text-lg text-white">{t.partner.checklistTitle}</p>
+      {dayOf && <p className="text-sm text-white">{fmt(t.partner.checklistDayOf, { n: dayOf })}</p>}
       <p className="text-sm text-muted">{t.partner.checklistMedTimes}</p>
       <p className="text-sm text-muted">{t.partner.checklistFridgeReminder}</p>
       {loading ? (
@@ -400,7 +400,7 @@ function MoodHistory({ patientId }: { patientId: string }) {
   return (
     <Card className="space-y-3">
       <div>
-        <p className="font-display text-lg text-plum-700">{t.partner.moodHistoryTitle}</p>
+        <p className="font-display text-lg text-white">{t.partner.moodHistoryTitle}</p>
         <p className="text-xs text-faint">{t.partner.moodHistorySubtitle}</p>
       </div>
       {loading ? (
@@ -423,7 +423,7 @@ function MoodHistory({ patientId }: { patientId: string }) {
         </div>
       )}
       <div className="rounded-xl bg-cream/60 p-3">
-        <p className="text-sm font-medium text-plum-700">{t.partner.predictedHardTitle}</p>
+        <p className="text-sm font-medium text-white">{t.partner.predictedHardTitle}</p>
         <p className="mt-1 text-sm text-muted">
           {hasPattern ? t.partner.predictedHardBody : t.partner.predictedHardEmpty}
         </p>
@@ -481,7 +481,7 @@ function PartnerNotes({ profile, otherName }: { profile: Profile; otherName: str
 
   return (
     <Card className="space-y-3">
-      <p className="font-display text-lg text-plum-700">{t.partner.notesTitle}</p>
+      <p className="font-display text-lg text-white">{t.partner.notesTitle}</p>
       {loading ? (
         <Spinner />
       ) : notes.length === 0 ? (

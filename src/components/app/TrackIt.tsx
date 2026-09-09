@@ -119,8 +119,8 @@ export function TrackIt() {
       <PageHeader title={t.track.title} subtitle={t.track.subtitle} />
 
       <Card className="space-y-4">
-        <p className="font-display text-lg text-plum-700">{t.track.addReading}</p>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <p className="font-display text-lg text-white">{t.track.addReading}</p>
+        <div className="grid gap-4">
           <div>
             <Label>{t.track.hormone}</Label>
             <Select value={hormone} onChange={(e) => pickHormone(e.target.value)}>
@@ -183,7 +183,7 @@ export function TrackIt() {
 
         {interpretation && (
           <div className="rounded-xl bg-plum-50 p-4">
-            <p className="text-sm font-semibold text-plum-700">
+            <p className="text-sm font-semibold text-white">
               {t.track.interpretationTitle}
             </p>
             <p className="mt-1 text-sm text-muted">{interpretation}</p>
@@ -194,13 +194,13 @@ export function TrackIt() {
 
       <Link href="/app/journey">
         <Card className="mt-4 flex items-center justify-between gap-3 transition hover:border-berry-400">
-          <p className="font-medium text-plum-700">{t.journey.trackLink}</p>
+          <p className="font-medium text-white">{t.journey.trackLink}</p>
           <span className="shrink-0 text-berry-500">→</span>
         </Card>
       </Link>
 
       {/* History */}
-      <h2 className="mb-3 mt-8 font-display text-lg text-plum-700">
+      <h2 className="mb-3 mt-8 font-display text-lg text-white">
         {t.track.history}
       </h2>
       {loading ? (
@@ -214,7 +214,7 @@ export function TrackIt() {
           {logs.map((log) => (
             <Card key={log.id} className="flex items-baseline justify-between p-4">
               <div>
-                <span className="font-semibold text-plum-700">
+                <span className="font-semibold text-white">
                   {t.track.hormones[
                     log.hormone as keyof typeof t.track.hormones
                   ] ?? log.hormone}

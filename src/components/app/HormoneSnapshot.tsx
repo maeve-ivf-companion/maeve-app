@@ -40,7 +40,7 @@ export function HormoneSnapshot() {
     <Link href="/app/monitoring">
       <Card className="transition hover:border-berry-400 hover:shadow-md">
         <div className="flex items-center justify-between">
-          <p className="font-display text-lg text-plum-700">
+          <p className="font-display text-lg text-white">
             {t.dashboard.hormoneSnapshotTitle}
           </p>
           <span className="text-berry-500">→</span>

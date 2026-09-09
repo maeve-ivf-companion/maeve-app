@@ -205,9 +205,9 @@ export function OnboardingFlow() {
             <p className="text-muted">{t.onboarding.roleQuestion}</p>
             <button
               onClick={() => chooseRole("patient")}
-              className="w-full rounded-2xl border border-line bg-white p-5 text-left transition hover:border-berry-400 hover:shadow-md"
+              className="w-full rounded-2xl border border-line bg-white/5 p-5 text-left transition hover:border-berry-400 hover:bg-white/10"
             >
-              <span className="font-display text-xl text-plum-700">
+              <span className="font-display text-xl text-white">
                 {t.onboarding.rolePatient}
               </span>
               <span className="mt-1 block text-sm text-muted">
@@ -216,9 +216,9 @@ export function OnboardingFlow() {
             </button>
             <button
               onClick={() => chooseRole("partner")}
-              className="w-full rounded-2xl border border-line bg-white p-5 text-left transition hover:border-berry-400 hover:shadow-md"
+              className="w-full rounded-2xl border border-line bg-white/5 p-5 text-left transition hover:border-berry-400 hover:bg-white/10"
             >
-              <span className="font-display text-xl text-plum-700">
+              <span className="font-display text-xl text-white">
                 {t.onboarding.rolePartner}
               </span>
               <span className="mt-1 block text-sm text-muted">
@@ -278,7 +278,7 @@ export function OnboardingFlow() {
                   key={title}
                   className="rounded-xl border border-line bg-cream/60 p-4"
                 >
-                  <p className="font-semibold text-plum-700">{title}</p>
+                  <p className="font-semibold text-white">{title}</p>
                   <p className="text-sm text-muted">{desc}</p>
                 </li>
               ))}
@@ -290,7 +290,7 @@ export function OnboardingFlow() {
                 onChange={(e) => setAgreed(e.target.checked)}
                 className="mt-1 h-5 w-5 accent-berry-500"
               />
-              <span className="text-sm text-plum-700">
+              <span className="text-sm text-white">
                 {t.onboarding.consentAgree}
               </span>
             </label>
@@ -335,7 +335,7 @@ export function OnboardingFlow() {
 
             <label className="flex cursor-pointer items-center justify-between rounded-xl bg-cream/60 p-4">
               <span>
-                <span className="block font-medium text-plum-700">{t.onboarding.notifLabel}</span>
+                <span className="block font-medium text-white">{t.onboarding.notifLabel}</span>
                 <span className="block text-sm text-muted">{t.onboarding.notifHint}</span>
               </span>
               <input
@@ -346,7 +346,7 @@ export function OnboardingFlow() {
               />
             </label>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4">
               <div>
                 <Label>{t.onboarding.ageLabel}</Label>
                 <Input type="number" inputMode="numeric" value={age} onChange={(e) => setAge(e.target.value)} />
@@ -367,7 +367,7 @@ export function OnboardingFlow() {
                     className={`flex-1 rounded-xl border px-3 py-2 text-sm font-medium transition ${
                       cycleNumber === n
                         ? "border-berry-400 bg-blush-100 text-berry-600"
-                        : "border-line text-plum-700 hover:border-berry-300"
+                        : "border-line text-white hover:border-berry-300"
                     }`}
                   >
                     {n === 1
@@ -410,7 +410,7 @@ export function OnboardingFlow() {
                       }}
                       className="h-5 w-5 accent-berry-500"
                     />
-                    <span className="flex-1 font-medium text-plum-700">{med.name}</span>
+                    <span className="flex-1 font-medium text-white">{med.name}</span>
                     {med.checked && (
                       <Input
                         type="time"
@@ -431,7 +431,7 @@ export function OnboardingFlow() {
             <div>
               <Label>{t.onboarding.happyTitle}</Label>
               <p className="mb-3 text-sm text-muted">{t.onboarding.happyHint}</p>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <div className="grid grid-cols-2 gap-2">
                 {HAPPY_KEYS.map((key) => (
                   <button
                     key={key}
@@ -439,7 +439,7 @@ export function OnboardingFlow() {
                     className={`rounded-xl border px-3 py-2 text-left text-sm transition ${
                       happyThing === key
                         ? "border-berry-400 bg-blush-100 text-berry-600"
-                        : "border-line text-plum-700 hover:border-berry-300"
+                        : "border-line text-white hover:border-berry-300"
                     }`}
                   >
                     {t.onboarding.happyOptions[key]}
@@ -448,7 +448,7 @@ export function OnboardingFlow() {
               </div>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4">
               <div>
                 <Label>{t.onboarding.postalCodeLabel}</Label>
                 <Input
@@ -489,7 +489,7 @@ export function OnboardingFlow() {
                   key={i}
                   className="flex items-center justify-between rounded-xl border border-line bg-cream/40 px-3 py-2"
                 >
-                  <span className="text-sm font-medium text-plum-700">{e.title}</span>
+                  <span className="text-sm font-medium text-white">{e.title}</span>
                   <span className="text-xs text-faint">
                     {new Date(e.scheduled_at).toLocaleString(lang, {
                       month: "short",

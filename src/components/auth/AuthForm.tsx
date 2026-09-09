@@ -159,7 +159,7 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
                 onChange={(e) => setTermsAccepted(e.target.checked)}
                 className="mt-0.5 h-5 w-5 shrink-0 accent-berry-500"
               />
-              <span className="text-sm text-plum-700">
+              <span className="text-sm text-white">
                 {t.auth.termsPrefix}{" "}
                 <Link
                   href="/terms"

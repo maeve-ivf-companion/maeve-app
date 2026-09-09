@@ -103,7 +103,7 @@ export function ScheduleIt() {
 
       {showForm && (
         <Card className="mb-6 space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4">
             <div className="sm:col-span-2">
               <Label>{t.schedule.eventTitle}</Label>
               <Input
@@ -212,7 +212,7 @@ function Section({
   if (events.length === 0) return null;
   return (
     <section className={muted ? "opacity-70" : ""}>
-      <h2 className="mb-3 font-display text-lg text-plum-700">{title}</h2>
+      <h2 className="mb-3 font-display text-lg text-white">{title}</h2>
       <div className="space-y-2">
         {events.map((e) => (
           <Card key={e.id} className="flex items-center gap-3 p-4">
@@ -221,7 +221,7 @@ function Section({
               style={{ backgroundColor: typeAccent[e.type] }}
             />
             <div className="flex-1">
-              <p className="font-medium text-plum-700">{e.title}</p>
+              <p className="font-medium text-white">{e.title}</p>
               <p className="text-sm text-faint">
                 {typeLabel(e.type)} · {fmtWhen(e.scheduled_at)}
               </p>

@@ -2,18 +2,20 @@
 
 import { forwardRef, useState } from "react";
 
-type Variant = "primary" | "secondary" | "ghost" | "soft" | "outline";
+type Variant = "primary" | "secondary" | "ghost" | "soft" | "outline" | "outlineLight";
 type Size = "sm" | "md" | "lg";
 
 const variants: Record<Variant, string> = {
   primary:
     "bg-berry-500 text-white hover:bg-berry-600 shadow-sm shadow-berry-500/20",
   secondary:
-    "bg-plum-700 text-white hover:bg-plum-600 shadow-sm shadow-plum-700/20",
-  ghost: "bg-transparent text-plum-700 hover:bg-plum-50",
+    "bg-white/10 text-white hover:bg-white/15 border border-white/10",
+  ghost: "bg-transparent text-white hover:bg-white/10",
   soft: "bg-blush-100 text-berry-600 hover:bg-blush-50",
   outline:
-    "border border-plum-200 bg-white text-plum-700 hover:border-berry-400 hover:bg-blush-50 active:bg-blush-100 shadow-sm shadow-plum-900/[0.04]",
+    "border border-white/30 bg-transparent text-white hover:bg-white/10 active:bg-white/15",
+  outlineLight:
+    "border border-white/30 bg-transparent text-white hover:bg-white/10 active:bg-white/15",
 };
 
 const sizes: Record<Size, string> = {
@@ -47,7 +49,7 @@ export function Card({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`rounded-2xl border border-line bg-white p-6 shadow-sm shadow-plum-900/[0.03] ${className}`}
+      className={`rounded-2xl border border-line bg-white/[0.06] p-6 shadow-lg shadow-black/10 ${className}`}
       {...props}
     />
   );
@@ -59,14 +61,14 @@ export function Label({
 }: React.LabelHTMLAttributes<HTMLLabelElement>) {
   return (
     <label
-      className={`mb-1.5 block text-sm font-medium text-plum-700 ${className}`}
+      className={`mb-1.5 block text-sm font-medium text-white ${className}`}
       {...props}
     />
   );
 }
 
 const fieldBase =
-  "w-full rounded-xl border border-line bg-cream/60 px-4 py-2.5 text-ink placeholder:text-faint transition focus:border-berry-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-berry-400/30";
+  "w-full rounded-xl border border-line bg-white/[0.06] px-4 py-2.5 text-ink placeholder:text-faint transition focus:border-berry-400 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-berry-400/30";
 
 export const Input = forwardRef<
   HTMLInputElement,

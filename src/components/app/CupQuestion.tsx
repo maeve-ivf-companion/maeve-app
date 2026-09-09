@@ -31,7 +31,7 @@ export function CupQuestion() {
 
   return (
     <Card className="space-y-3">
-      <p className="font-display text-lg text-plum-700">{t.dashboard.cupTitle}</p>
+      <p className="font-display text-lg text-white">{t.dashboard.cupTitle}</p>
       {saved ? (
         <div className="rounded-xl bg-plum-50 p-4">
           <p className="text-sm text-muted">{t.dashboard.cupSaved}</p>

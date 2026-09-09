@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useLanguage } from "@/lib/i18n/provider";
 import { PageHeader } from "@/components/app/PageHeader";
@@ -156,7 +157,7 @@ function StatusDot({ status }: { status: StageStatus }) {
         <span className="h-2 w-2 rounded-full bg-berry-500" />
       </span>
     );
-  return <span className="h-6 w-6 shrink-0 rounded-full border-2 border-line bg-white" />;
+  return <span className="h-6 w-6 shrink-0 rounded-full border-2 border-line bg-transparent" />;
 }
 
 export function Journey() {
@@ -211,7 +212,7 @@ export function Journey() {
       {/* Timeline */}
       <Card>
         <div className="mb-4 flex items-baseline justify-between">
-          <h2 className="font-display text-lg text-plum-700">
+          <h2 className="font-display text-lg text-white">
             {t.journey.timelineTitle}
           </h2>
           {profile?.cycle_start_date && (
@@ -248,7 +249,7 @@ export function Journey() {
                   <div className="flex items-center justify-between gap-2">
                     <p
                       className={`font-medium ${
-                        stage.status === "upcoming" ? "text-faint" : "text-plum-700"
+                        stage.status === "upcoming" ? "text-faint" : "text-white"
                       }`}
                     >
                       {t.journey.stages[stage.key]}
@@ -258,7 +259,7 @@ export function Journey() {
                         className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
                           stage.status === "current"
                             ? "bg-berry-500 text-white"
-                            : "bg-plum-50 text-plum-700"
+                            : "bg-plum-50 text-white"
                         }`}
                       >
                         {stage.status === "current"
@@ -287,10 +288,10 @@ export function Journey() {
       {/* How-to videos */}
       {videos.length > 0 && (
         <>
-          <h2 className="mb-3 mt-8 font-display text-lg text-plum-700">
+          <h2 className="mb-3 mt-8 font-display text-lg text-white">
             {t.journey.howToTitle}
           </h2>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-3">
             {videos.map((v) => (
               <a key={v.id} href={v.url} target="_blank" rel="noopener noreferrer">
                 <Card className="flex h-full items-start gap-3 transition hover:border-berry-400 hover:shadow-md">
@@ -298,7 +299,7 @@ export function Journey() {
                     ▶
                   </span>
                   <div>
-                    <p className="font-medium text-plum-700">
+                    <p className="font-medium text-white">
                       {lang === "fr" ? v.title_fr : v.title_en}
                     </p>
                     {v.duration_min && (
@@ -315,30 +316,37 @@ export function Journey() {
       )}
 
       {/* Self-care */}
-      <h2 className="mb-3 mt-8 font-display text-lg text-plum-700">
+      <h2 className="mb-3 mt-8 font-display text-lg text-white">
         {t.journey.selfCareTitle}
       </h2>
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3">
         <Card className="flex flex-col gap-1">
           <span className="text-2xl">🧘</span>
-          <p className="font-medium text-plum-700">
+          <p className="font-medium text-white">
             {t.journey.selfCare.meditationTitle}
           </p>
           <p className="text-sm text-muted">{t.journey.selfCare.meditationBody}</p>
         </Card>
         <Card className="flex flex-col gap-1">
           <span className="text-2xl">🤸</span>
-          <p className="font-medium text-plum-700">{t.journey.selfCare.yogaTitle}</p>
+          <p className="font-medium text-white">{t.journey.selfCare.yogaTitle}</p>
           <p className="text-sm text-muted">{t.journey.selfCare.yogaBody}</p>
         </Card>
         <Card className="flex flex-col gap-1">
           <span className="text-2xl">🥗</span>
-          <p className="font-medium text-plum-700">
+          <p className="font-medium text-white">
             {t.journey.selfCare.nutritionTitle}
           </p>
           <p className="text-sm text-muted">{t.journey.selfCare.nutritionBody}</p>
         </Card>
       </div>
+
+      <Link href="/app/learn">
+        <Card className="mt-6 flex items-center justify-between gap-3 transition hover:border-berry-400">
+          <p className="font-medium text-white">{t.journey.learnLink}</p>
+          <span className="shrink-0 text-berry-500">→</span>
+        </Card>
+      </Link>
     </div>
   );
 }

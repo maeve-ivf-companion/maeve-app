@@ -1,7 +1,7 @@
 export function Logo({
   className = "",
   showBy = true,
-  light = false,
+  light = true,
 }: {
   className?: string;
   showBy?: boolean;

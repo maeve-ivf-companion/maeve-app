@@ -27,13 +27,14 @@
   --color-blush-50: #fff0f5;
   --color-blush-100: #fce4ec;
 
-  /* Warm neutrals */
-  --color-cream: #fafaf9;
-  --color-sand: #f8f4fb;
-  --color-ink: #1a0f2a;
-  --color-muted: #5a4a72;
-  --color-faint: #9090aa;
-  --color-line: #e8e0f0;
+  /* Dark surfaces (was "warm neutrals" for a light theme; the whole app is
+     now dark plum by default, per the maeve_website.html reference) */
+  --color-cream: #2b1b3d;
+  --color-sand: #3d2459;
+  --color-ink: #ffffff;
+  --color-muted: #ccbbdd;
+  --color-faint: #b3a3ce;
+  --color-line: rgba(255, 255, 255, 0.14);
 
   /* Feedback */
   --color-grow-500: #4caf50;
@@ -53,8 +54,8 @@
 }
 
 :root {
-  --background: #fafaf9;
-  --foreground: #1a0f2a;
+  --background: #2b1b3d;
+  --foreground: #ffffff;
 }
 
 html {
@@ -81,7 +82,7 @@ h1, h2, h3, h4 {
 }
 
 .bg-blush-gradient {
-  background: linear-gradient(160deg, #fff0f5 0%, #f8f4fb 100%);
+  background: linear-gradient(160deg, #3d2459 0%, #2b1b3d 100%);
 }
 
 .text-gradient {

@@ -99,7 +99,7 @@ export function Monitoring() {
       {/* Hormonal reading & trend */}
       <Card className="space-y-4">
         <div className="flex items-center justify-between">
-          <p className="font-display text-lg text-plum-700">{t.monitoring.trendTitle}</p>
+          <p className="font-display text-lg text-white">{t.monitoring.trendTitle}</p>
           <Link href="/app/track" className="text-sm font-medium text-berry-500 hover:text-berry-600">
             {t.monitoring.addReading}
           </Link>
@@ -130,7 +130,7 @@ export function Monitoring() {
       </Card>
 
       {/* Treatment calendar */}
-      <h2 className="mb-3 mt-8 font-display text-lg text-plum-700">{t.monitoring.calendarTitle}</h2>
+      <h2 className="mb-3 mt-8 font-display text-lg text-white">{t.monitoring.calendarTitle}</h2>
       <Card>
         <div className="grid grid-cols-7 gap-1 text-center text-xs text-faint">
           {[0, 1, 2, 3, 4, 5, 6].map((d) => (
@@ -177,16 +177,16 @@ export function Monitoring() {
       </Card>
 
       {/* Hormone flashcards */}
-      <h2 className="mb-1 mt-8 font-display text-lg text-plum-700">{t.monitoring.flashcardsTitle}</h2>
+      <h2 className="mb-1 mt-8 font-display text-lg text-white">{t.monitoring.flashcardsTitle}</h2>
       <p className="mb-3 text-sm text-muted">{t.monitoring.flashcardsHint}</p>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3">
         {HORMONE_KEYS.map((key) => {
           const isFlipped = flipped.has(key);
           return (
             <button key={key} onClick={() => toggleFlip(key)} className="text-left">
               <Card className="flex h-full min-h-[120px] flex-col justify-center transition hover:border-berry-400 hover:shadow-md">
                 {!isFlipped ? (
-                  <p className="font-display text-xl text-plum-700">{t.track.hormones[key]}</p>
+                  <p className="font-display text-xl text-white">{t.track.hormones[key]}</p>
                 ) : (
                   <div>
                     <p className="text-sm text-muted">
@@ -205,7 +205,7 @@ export function Monitoring() {
       <Link href="/app/journey">
         <Card className="mt-6 flex items-center justify-between gap-3 transition hover:border-berry-400">
           <div>
-            <p className="font-medium text-plum-700">{t.monitoring.howToBlurb}</p>
+            <p className="font-medium text-white">{t.monitoring.howToBlurb}</p>
             <p className="text-sm text-muted">{t.monitoring.howToLink}</p>
           </div>
           <span className="shrink-0 text-berry-500">→</span>

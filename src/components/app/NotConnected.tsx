@@ -12,11 +12,11 @@ export function NotConnected() {
       </h1>
       <p className="mt-2 max-w-md text-muted">
         Maeve&apos;s accounts and data turn on once Supabase is connected. Add{" "}
-        <code className="rounded bg-white px-1.5 py-0.5 text-sm text-berry-600">
+        <code className="rounded bg-white/10 px-1.5 py-0.5 text-sm text-berry-300">
           NEXT_PUBLIC_SUPABASE_URL
         </code>{" "}
         and{" "}
-        <code className="rounded bg-white px-1.5 py-0.5 text-sm text-berry-600">
+        <code className="rounded bg-white/10 px-1.5 py-0.5 text-sm text-berry-300">
           NEXT_PUBLIC_SUPABASE_ANON_KEY
         </code>{" "}
         to your environment.

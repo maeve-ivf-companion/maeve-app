@@ -33,7 +33,7 @@ export function LegalPage({ doc }: { doc: "terms" | "privacy" }) {
         <div className="mt-10 space-y-8">
           {content.sections.map((section) => (
             <section key={section.heading}>
-              <h2 className="font-display text-xl text-plum-700">
+              <h2 className="font-display text-xl text-white">
                 {section.heading}
               </h2>
               <div className="mt-3 space-y-3">

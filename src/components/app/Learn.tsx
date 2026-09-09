@@ -57,7 +57,7 @@ export function Learn() {
       {/* What-if AI */}
       <Card className="space-y-3">
         <div>
-          <h2 className="font-display text-xl text-plum-700">
+          <h2 className="font-display text-xl text-white">
             {t.learn.whatIfTitle}
           </h2>
           <p className="text-sm text-muted">{t.learn.whatIfSubtitle}</p>
@@ -76,7 +76,7 @@ export function Learn() {
         </div>
         {answer && (
           <div className="rounded-xl bg-plum-50 p-4">
-            <p className="text-sm text-plum-700">{answer}</p>
+            <p className="text-sm text-white">{answer}</p>
             <p className="mt-3 text-xs text-faint">
               {t.common.notMedicalAdvice}
             </p>
@@ -85,7 +85,7 @@ export function Learn() {
       </Card>
 
       {/* Video library */}
-      <h2 className="mb-4 mt-8 font-display text-xl text-plum-700">
+      <h2 className="mb-4 mt-8 font-display text-xl text-white">
         {t.learn.videosTitle}
       </h2>
       {loading ? (
@@ -102,7 +102,7 @@ export function Learn() {
                 <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-faint">
                   {t.learn.categories[cat]}
                 </h3>
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid gap-3">
                   {items.map((v) => (
                     <a
                       key={v.id}
@@ -115,7 +115,7 @@ export function Learn() {
                           ▶
                         </span>
                         <div>
-                          <p className="font-medium text-plum-700">
+                          <p className="font-medium text-white">
                             {lang === "fr" ? v.title_fr : v.title_en}
                           </p>
                           <p className="text-sm text-muted">

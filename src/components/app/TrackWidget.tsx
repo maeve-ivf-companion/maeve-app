@@ -73,7 +73,7 @@ export function TrackWidget() {
   return (
     <Card className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-display text-lg text-plum-700">
+        <h2 className="font-display text-lg text-white">
           {t.dashboard.trackWidget}
         </h2>
         <Link
@@ -84,7 +84,7 @@ export function TrackWidget() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_auto]">
+      <div className="grid grid-cols-1 gap-3">
         <Select value={hormone} onChange={(e) => setHormone(e.target.value)}>
           {HORMONE_KEYS.map((h) => (
             <option key={h} value={h}>
@@ -123,7 +123,7 @@ export function TrackWidget() {
                 key={r.id}
                 className="flex items-baseline justify-between gap-3 text-sm"
               >
-                <span className="min-w-0 truncate text-plum-700">
+                <span className="min-w-0 truncate text-white">
                   {t.track.hormones[r.hormone as keyof typeof t.track.hormones] ??
                     r.hormone}
                   <span className="ml-2 text-faint">

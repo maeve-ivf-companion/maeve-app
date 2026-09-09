@@ -45,7 +45,7 @@ export function TodaysChecklist() {
 
   return (
     <Card className="space-y-3">
-      <p className="font-display text-lg text-plum-700">{t.dashboard.checklistTitle}</p>
+      <p className="font-display text-lg text-white">{t.dashboard.checklistTitle}</p>
       {loading ? (
         <div className="flex justify-center py-4 text-muted">
           <Spinner />
@@ -59,7 +59,7 @@ export function TodaysChecklist() {
               onChange={(e) => setDrankWater(e.target.checked)}
               className="h-5 w-5 accent-berry-500"
             />
-            <span className={drankWater ? "text-faint line-through" : "text-plum-700"}>
+            <span className={drankWater ? "text-faint line-through" : "text-white"}>
               {t.dashboard.checklistWater}
             </span>
           </li>
@@ -69,7 +69,7 @@ export function TodaysChecklist() {
             today.map((e) => (
               <li key={e.id} className="flex items-center gap-3">
                 <span className="h-2 w-2 shrink-0 rounded-full bg-berry-500" />
-                <span className="min-w-0 flex-1 truncate text-plum-700">{e.title}</span>
+                <span className="min-w-0 flex-1 truncate text-white">{e.title}</span>
                 <span className="shrink-0 text-xs text-faint">
                   {new Date(e.scheduled_at).toLocaleTimeString(lang, {
                     hour: "numeric",
@@ -82,7 +82,7 @@ export function TodaysChecklist() {
           {next && (
             <li className="mt-2 border-t border-line pt-2 text-sm text-muted">
               {t.dashboard.checklistNextAppt}:{" "}
-              <span className="font-medium text-plum-700">{next.title}</span>{" "}
+              <span className="font-medium text-white">{next.title}</span>{" "}
               {new Date(next.scheduled_at).toLocaleDateString(lang, {
                 month: "short",
                 day: "numeric",

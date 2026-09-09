@@ -82,7 +82,7 @@ export function Dashboard() {
         <PartnerBrief role="partner" />
         <Link href="/app/learn">
           <Card className="transition hover:border-berry-400">
-            <p className="font-display text-xl text-plum-700">{t.nav.learn}</p>
+            <p className="font-display text-xl text-white">{t.nav.learn}</p>
             <p className="mt-1 text-sm text-muted">{t.learn.subtitle}</p>
           </Card>
         </Link>
@@ -130,7 +130,7 @@ export function Dashboard() {
       {/* Journey teaser */}
       <Link href="/app/journey">
         <Card className="flex items-center justify-between gap-3 transition hover:border-berry-400">
-          <p className="font-medium text-plum-700">{t.journey.dashboardLink}</p>
+          <p className="font-medium text-white">{t.journey.dashboardLink}</p>
           <span className="shrink-0 text-berry-500">→</span>
         </Card>
       </Link>
@@ -162,7 +162,7 @@ export function Dashboard() {
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-grow-300/30 text-grow-500">
             ✓
           </span>
-          <p className="font-medium text-plum-700">
+          <p className="font-medium text-white">
             {t.dashboard.partnerConnected}
           </p>
         </Card>
@@ -170,7 +170,7 @@ export function Dashboard() {
         <Link href="/app/partner">
           <Card className="flex items-center justify-between gap-3 transition hover:border-berry-400">
             <div className="min-w-0">
-              <p className="font-medium text-plum-700">
+              <p className="font-medium text-white">
                 {t.dashboard.partnerNotConnected}
               </p>
               <p className="text-sm text-muted">{t.dashboard.invitePartner}</p>

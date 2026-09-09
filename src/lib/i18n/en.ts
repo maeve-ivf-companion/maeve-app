@@ -34,10 +34,13 @@ export const en = {
     portals: "Portals",
     track: "Track",
     schedule: "Schedule",
-    partner: "Partner",
+    partner: "Support",
     learn: "Learn",
     settings: "Settings",
     account: "Account",
+    monitoring: "Monitoring",
+    journey: "Journey",
+    community: "Community",
     signOut: "Sign out",
     dashboard: "Dashboard",
   },
@@ -302,7 +305,7 @@ export const en = {
     reminder: "Remind me",
   },
   partner: {
-    title: "Your Partner",
+    title: "Support",
     patientTitle: "Bring your partner alongside you",
     patientBody:
       "Maeve sends your partner a gentle, real-time sense of how to show up, never your raw data, only what helps. You decide what crosses over.",
@@ -418,6 +421,7 @@ export const en = {
     },
     dashboardLink: "Your journey",
     trackLink: "See your journey and self-care tips",
+    learnLink: "More how-to videos and ask a question",
   },
   monitoring: {
     title: "Monitoring",
@@ -465,6 +469,8 @@ export const en = {
       "This space is anonymous. Please do not share personal information. Maeve is not liable for anything shared here, and we encourage caution before arranging any personal contact with another member.",
     askMaeveTitle: "Ask Maeve",
     askMaeveBody: "Have a question of your own? Chat with Maeve any time.",
+    portalsTitle: "Need somewhere more private?",
+    portalsBody: "Vent, laugh, or cry it out in your own space.",
     askMaeveOpen: "Open chat",
   },
   chat: {

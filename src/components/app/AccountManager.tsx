@@ -161,7 +161,7 @@ export function AccountManager() {
 
       {/* Details */}
       <Card className="space-y-4">
-        <h2 className="font-display text-lg text-plum-700">
+        <h2 className="font-display text-lg text-white">
           {t.account.detailsTitle}
         </h2>
         <div>
@@ -189,12 +189,12 @@ export function AccountManager() {
 
       {/* Email */}
       <Card className="space-y-4">
-        <h2 className="font-display text-lg text-plum-700">
+        <h2 className="font-display text-lg text-white">
           {t.account.emailTitle}
         </h2>
         <p className="text-sm text-muted">
           {t.account.currentEmail}:{" "}
-          <span className="break-all font-medium text-plum-700">{email}</span>
+          <span className="break-all font-medium text-white">{email}</span>
         </p>
         <div>
           <Label htmlFor="newEmail">{t.account.newEmail}</Label>
@@ -218,10 +218,10 @@ export function AccountManager() {
 
       {/* Password */}
       <Card className="space-y-4">
-        <h2 className="font-display text-lg text-plum-700">
+        <h2 className="font-display text-lg text-white">
           {t.account.passwordTitle}
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4">
           <div>
             <Label htmlFor="pw">{t.account.newPassword}</Label>
             <PasswordInput
@@ -259,7 +259,7 @@ export function AccountManager() {
 
       {/* Privacy */}
       <Card className="space-y-4">
-        <h2 className="font-display text-lg text-plum-700">
+        <h2 className="font-display text-lg text-white">
           {t.account.privacyTitle}
         </h2>
         <p className="text-sm text-muted">{t.account.privacyBody}</p>

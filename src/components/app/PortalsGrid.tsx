@@ -27,7 +27,7 @@ export function PortalsGrid() {
                   >
                     {label.title}
                   </h2>
-                  <p className="mt-0.5 text-sm text-plum-700/70">{label.desc}</p>
+                  <p className="mt-0.5 text-sm text-white/70">{label.desc}</p>
                 </div>
               </div>
             </Link>

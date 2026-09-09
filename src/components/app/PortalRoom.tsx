@@ -86,12 +86,12 @@ export function PortalRoom({ portal }: { portal: Portal }) {
         <h1 className="mt-2 font-display text-3xl" style={{ color: meta.accent }}>
           {label.title}
         </h1>
-        <p className="mt-1 text-plum-700/70">{label.desc}</p>
+        <p className="mt-1 text-white/70">{label.desc}</p>
       </div>
 
       {/* Compose */}
       <Card className="mt-6 space-y-3">
-        <label className="text-sm font-medium text-plum-700">
+        <label className="text-sm font-medium text-white">
           {t.portals.composePrompt}
         </label>
         <Textarea
@@ -121,9 +121,9 @@ export function PortalRoom({ portal }: { portal: Portal }) {
           <Spinner />
         </div>
       ) : (
-        <div className="mt-8 grid gap-8 lg:grid-cols-2">
+        <div className="mt-8 grid gap-8">
           <section>
-            <h2 className="mb-3 font-display text-lg text-plum-700">
+            <h2 className="mb-3 font-display text-lg text-white">
               {t.portals.yourEntries}
             </h2>
             <div className="space-y-3">
@@ -136,7 +136,7 @@ export function PortalRoom({ portal }: { portal: Portal }) {
             </div>
           </section>
           <section>
-            <h2 className="mb-3 font-display text-lg text-plum-700">
+            <h2 className="mb-3 font-display text-lg text-white">
               {t.portals.communityFeed}
             </h2>
             <div className="space-y-3">
@@ -164,8 +164,8 @@ function Entry({
   mine?: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-line bg-white p-4">
-      <p className="whitespace-pre-wrap text-plum-700">{post.body}</p>
+    <div className="rounded-xl border border-line bg-white/5 p-4">
+      <p className="whitespace-pre-wrap text-white">{post.body}</p>
       <p className="mt-2 text-xs text-faint">
         {date}
         {mine && post.visibility === "community" ? " · 🌍" : ""}

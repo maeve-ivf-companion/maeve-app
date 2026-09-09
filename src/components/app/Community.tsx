@@ -120,8 +120,8 @@ export function Community() {
         <p className="text-sm text-muted">{t.community.intro}</p>
       </Card>
 
-      <h2 className="mb-3 font-display text-lg text-plum-700">{t.community.topicsSubtitle}</h2>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <h2 className="mb-3 font-display text-lg text-white">{t.community.topicsSubtitle}</h2>
+      <div className="grid grid-cols-2 gap-3">
         {COMMUNITY_TOPICS.map(({ key, emoji }) => (
           <button key={key} onClick={() => setTopic(key)} className="text-left">
             <Card
@@ -130,7 +130,7 @@ export function Community() {
               }`}
             >
               <span className="text-3xl">{emoji}</span>
-              <span className="text-sm font-medium text-plum-700">{t.community.topics[key]}</span>
+              <span className="text-sm font-medium text-white">{t.community.topics[key]}</span>
               {topic === key && (
                 <span className="text-[10px] font-semibold uppercase tracking-wide text-berry-500">
                   {t.community.yourStageTopic}
@@ -167,7 +167,7 @@ export function Community() {
               {posts.map((p) => (
                 <Card key={p.id} className="space-y-3">
                   <p className="text-xs font-medium text-berry-500">{t.community.anonymousMember}</p>
-                  <p className="text-plum-700">{p.body}</p>
+                  <p className="text-white">{p.body}</p>
                   <p className="text-xs text-faint">
                     {new Date(p.created_at).toLocaleDateString(lang, {
                       month: "short",
@@ -178,7 +178,7 @@ export function Community() {
                     <div className="space-y-2 border-t border-line pt-3">
                       <p className="text-xs font-medium text-muted">{t.community.replies}</p>
                       {replies[p.id].map((r) => (
-                        <div key={r.id} className="rounded-lg bg-cream/60 p-2 text-sm text-plum-700">
+                        <div key={r.id} className="rounded-lg bg-cream/60 p-2 text-sm text-white">
                           {r.body}
                         </div>
                       ))}
@@ -209,8 +209,18 @@ export function Community() {
       <Link href="/app/chat">
         <Card className="mt-4 flex items-center justify-between gap-3 transition hover:border-berry-400">
           <div>
-            <p className="font-medium text-plum-700">{t.community.askMaeveTitle}</p>
+            <p className="font-medium text-white">{t.community.askMaeveTitle}</p>
             <p className="text-sm text-muted">{t.community.askMaeveBody}</p>
+          </div>
+          <span className="shrink-0 text-berry-500">→</span>
+        </Card>
+      </Link>
+
+      <Link href="/app/portals">
+        <Card className="mt-3 flex items-center justify-between gap-3 transition hover:border-berry-400">
+          <div>
+            <p className="font-medium text-white">{t.community.portalsTitle}</p>
+            <p className="text-sm text-muted">{t.community.portalsBody}</p>
           </div>
           <span className="shrink-0 text-berry-500">→</span>
         </Card>

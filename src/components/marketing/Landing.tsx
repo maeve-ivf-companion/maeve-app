@@ -35,14 +35,14 @@ export function Landing() {
   return (
     <div className="flex min-h-dvh flex-col">
       {/* Nav */}
-      <header className="sticky top-0 z-30 border-b border-line/60 bg-cream/80 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-white/10 bg-plum-700">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-4 sm:px-10 lg:px-16">
-          <Logo showBy={false} className="shrink-0" />
+          <Logo showBy={false} className="shrink-0" light />
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-            <LanguageToggle />
+            <LanguageToggle light />
             <Link
               href="/login"
-              className="hidden text-sm font-medium text-plum-700 hover:text-berry-500 sm:block"
+              className="hidden text-sm font-medium text-white/75 hover:text-white sm:block"
             >
               {t.auth.signIn}
             </Link>
@@ -54,16 +54,22 @@ export function Landing() {
       </header>
 
       {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="bg-blush-gradient absolute inset-0 -z-10" />
+      <section className="relative overflow-hidden bg-plum-700">
+        <div
+          className="pointer-events-none absolute inset-0 -z-10"
+          style={{
+            background:
+              "radial-gradient(ellipse at 70% 30%, rgba(194,24,91,0.25) 0%, transparent 60%), radial-gradient(ellipse at 20% 90%, rgba(194,24,91,0.15) 0%, transparent 50%)",
+          }}
+        />
         <div className="mx-auto max-w-4xl px-6 sm:px-10 lg:px-16 py-20 text-center sm:py-28">
-          <span className="inline-block rounded-full bg-white/70 px-4 py-1.5 text-sm font-medium text-berry-600 shadow-sm animate-rise">
+          <span className="inline-block rounded-full border border-berry-500/30 bg-berry-500/15 px-4 py-1.5 text-sm font-medium text-berry-300 animate-rise">
             {t.landing.heroEyebrow}
           </span>
-          <h1 className="mx-auto mt-6 max-w-3xl font-display text-5xl leading-[1.05] text-ink sm:text-6xl animate-rise">
+          <h1 className="mx-auto mt-6 max-w-3xl font-display text-5xl leading-[1.05] text-white sm:text-6xl animate-rise">
             {t.landing.heroTitle}
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted animate-rise">
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-plum-200 animate-rise">
             {t.landing.heroBody}
           </p>
           <div className="mt-9 flex flex-wrap items-center justify-center gap-4 animate-rise">
@@ -71,7 +77,7 @@ export function Landing() {
               <Button size="lg">{t.landing.heroCta}</Button>
             </Link>
             <a href="#how">
-              <Button size="lg" variant="outline">
+              <Button size="lg" variant="outlineLight">
                 {t.landing.heroSecondary}
               </Button>
             </a>
@@ -90,7 +96,7 @@ export function Landing() {
       </section>
 
       {/* Pillars */}
-      <section id="how" className="bg-white py-24">
+      <section id="how" className="py-24">
         <div className="mx-auto max-w-6xl px-6 sm:px-10 lg:px-16">
           <h2 className="text-center font-display text-3xl text-ink sm:text-4xl">
             {t.landing.featuresTitle}
@@ -102,7 +108,7 @@ export function Landing() {
                 className="rounded-2xl border border-line bg-cream/50 p-7"
               >
                 <span className="text-3xl">{p.emoji}</span>
-                <h3 className="mt-4 font-display text-xl text-plum-700">
+                <h3 className="mt-4 font-display text-xl text-white">
                   {p.title}
                 </h3>
                 <p className="mt-2 text-sm text-muted">{p.body}</p>

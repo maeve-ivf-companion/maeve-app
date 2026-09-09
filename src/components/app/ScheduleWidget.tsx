@@ -93,7 +93,7 @@ export function ScheduleWidget() {
   return (
     <Card className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-display text-lg text-plum-700">
+        <h2 className="font-display text-lg text-white">
           {t.dashboard.scheduleWidget}
         </h2>
         <Link
@@ -106,7 +106,7 @@ export function ScheduleWidget() {
 
       {pingFor && (
         <div className="rounded-xl bg-blush-100 p-3">
-          <p className="mb-2 text-sm font-medium text-plum-700">
+          <p className="mb-2 text-sm font-medium text-white">
             {fmt(t.partner.feelingPingPrompt, { title: pingFor.title })}
           </p>
           <div className="flex justify-between gap-2">
@@ -114,7 +114,7 @@ export function ScheduleWidget() {
               <button
                 key={mood}
                 onClick={() => sendPing(mood)}
-                className="flex flex-1 items-center justify-center rounded-xl bg-white py-2 text-xl transition hover:bg-blush-50"
+                className="flex flex-1 items-center justify-center rounded-xl bg-white/5 py-2 text-xl transition hover:bg-white/10"
               >
                 {emoji}
               </button>
@@ -138,7 +138,7 @@ export function ScheduleWidget() {
                 style={{ backgroundColor: typeAccent[e.type] }}
               />
               <div className="min-w-0 flex-1">
-                <p className="truncate font-medium text-plum-700">{e.title}</p>
+                <p className="truncate font-medium text-white">{e.title}</p>
                 <p className="truncate text-xs text-faint">
                   {t.schedule.types[e.type]} ·{" "}
                   {new Date(e.scheduled_at).toLocaleString(lang, {
@@ -168,7 +168,7 @@ export function ScheduleWidget() {
             placeholder={t.schedule.eventTitle}
             autoFocus
           />
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3">
             <Select
               value={type}
               onChange={(e) => setType(e.target.value as EventType)}

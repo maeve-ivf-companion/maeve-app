@@ -36,10 +36,13 @@ export const fr: Dictionary = {
     portals: "Portails",
     track: "Suivi",
     schedule: "Horaire",
-    partner: "Partenaire",
+    partner: "Soutien",
     learn: "Apprendre",
     settings: "Réglages",
     account: "Compte",
+    monitoring: "Suivi médical",
+    journey: "Parcours",
+    community: "Communauté",
     signOut: "Déconnexion",
     dashboard: "Tableau de bord",
   },
@@ -304,7 +307,7 @@ export const fr: Dictionary = {
     reminder: "Me rappeler",
   },
   partner: {
-    title: "Votre partenaire",
+    title: "Soutien",
     patientTitle: "Amenez votre partenaire avec vous",
     patientBody:
       "Maeve transmet à votre partenaire un sens doux et en temps réel de comment être là, jamais vos données brutes, seulement ce qui aide. Vous décidez de ce qui est partagé.",
@@ -423,6 +426,7 @@ export const fr: Dictionary = {
     },
     dashboardLink: "Votre parcours",
     trackLink: "Voir votre parcours et les conseils bien-être",
+    learnLink: "Plus de vidéos pratiques et poser une question",
   },
   monitoring: {
     title: "Suivi médical",
@@ -470,6 +474,8 @@ export const fr: Dictionary = {
       "Cet espace est anonyme. Merci de ne pas partager de renseignements personnels. Maeve n'est pas responsable de ce qui est partagé ici, et nous encourageons la prudence avant tout contact personnel avec un autre membre.",
     askMaeveTitle: "Demander à Maeve",
     askMaeveBody: "Une question bien à vous ? Discutez avec Maeve à tout moment.",
+    portalsTitle: "Besoin d'un espace plus privé ?",
+    portalsBody: "Défoulez-vous, riez ou pleurez un bon coup dans votre propre espace.",
     askMaeveOpen: "Ouvrir la discussion",
   },
   chat: {

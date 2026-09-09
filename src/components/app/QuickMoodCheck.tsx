@@ -43,7 +43,7 @@ export function QuickMoodCheck() {
 
   return (
     <Card className="space-y-3">
-      <p className="font-display text-lg text-plum-700">{t.dashboard.moodCheckTitle}</p>
+      <p className="font-display text-lg text-white">{t.dashboard.moodCheckTitle}</p>
       <p className="text-sm text-muted">{t.dashboard.moodCheckPrompt}</p>
       <div className="flex justify-between gap-2">
         {MOODS.map(({ mood, emoji }) => (
