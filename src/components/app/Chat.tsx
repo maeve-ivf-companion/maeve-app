@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/app/PageHeader";
 import { Button, Card, Input, Spinner } from "@/components/ui";
 import type { ChatMessage } from "@/lib/supabase/types";
 
-export function Chat() {
+export function Chat({ compact = false }: { compact?: boolean } = {}) {
   const { t, lang } = useLanguage();
   const supabase = createClient();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -59,9 +59,9 @@ export function Chat() {
 
   return (
     <div>
-      <PageHeader title={t.chat.title} subtitle={t.chat.subtitle} />
+      {!compact && <PageHeader title={t.chat.title} subtitle={t.chat.subtitle} />}
 
-      <Card className="flex h-[60vh] flex-col">
+      <Card className={`flex flex-col ${compact ? "h-[380px]" : "h-[60vh]"}`}>
         <div className="flex-1 space-y-3 overflow-y-auto pr-1">
           {loading ? (
             <div className="flex justify-center py-8 text-muted">

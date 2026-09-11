@@ -153,8 +153,8 @@ function StatusDot({ status }: { status: StageStatus }) {
     );
   if (status === "current")
     return (
-      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-berry-500 bg-blush-100">
-        <span className="h-2 w-2 rounded-full bg-berry-500" />
+      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-berry-500 bg-berry-500">
+        <span className="h-2 w-2 rounded-full bg-blush-100" />
       </span>
     );
   return <span className="h-6 w-6 shrink-0 rounded-full border-2 border-line bg-transparent" />;
@@ -243,7 +243,7 @@ export function Journey() {
                 <StatusDot status={stage.status} />
                 <div
                   className={`min-w-0 flex-1 rounded-xl px-3 py-2 ${
-                    stage.status === "current" ? "bg-blush-100" : ""
+                    stage.status === "current" ? "bg-berry-500/25" : ""
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
@@ -258,8 +258,8 @@ export function Journey() {
                       <span
                         className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
                           stage.status === "current"
-                            ? "bg-berry-500 text-white"
-                            : "bg-plum-50 text-white"
+                            ? "bg-blush-100 text-berry-600"
+                            : "bg-white/10 text-white"
                         }`}
                       >
                         {stage.status === "current"

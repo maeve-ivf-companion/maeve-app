@@ -1,32 +1,53 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useLanguage } from "@/lib/i18n/provider";
 import { PageHeader } from "@/components/app/PageHeader";
-import { Card, Spinner } from "@/components/ui";
+import { Button, Card, Input, Select, Spinner } from "@/components/ui";
 import { EVENT_TYPE_ACCENT } from "@/lib/eventTypes";
 import { HORMONE_FACTS, HORMONE_KEYS, type HormoneKey } from "@/lib/hormones";
 import type { HormoneLog, ScheduleEvent } from "@/lib/supabase/types";
+
+const DEFAULT_UNITS: Record<HormoneKey, string> = {
+  estradiol: "pg/mL",
+  lh: "mIU/mL",
+  fsh: "mIU/mL",
+  progesterone: "ng/mL",
+  hcg: "mIU/mL",
+  amh: "ng/mL",
+};
 
 export function Monitoring() {
   const { t, lang } = useLanguage();
   const supabase = createClient();
   const [logs, setLogs] = useState<HormoneLog[]>([]);
   const [events, setEvents] = useState<ScheduleEvent[]>([]);
+  const [recent, setRecent] = useState<HormoneLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [flipped, setFlipped] = useState<Set<HormoneKey>>(new Set());
 
-  useEffect(() => {
-    (async () => {
-      const monthStart = new Date();
-      monthStart.setDate(1);
-      monthStart.setHours(0, 0, 0, 0);
-      const monthEnd = new Date(monthStart);
-      monthEnd.setMonth(monthEnd.getMonth() + 1);
+  // Track-a-hormone (moved here from Home)
+  const [hormone, setHormone] = useState<HormoneKey>("estradiol");
+  const [value, setValue] = useState("");
+  const [unit, setUnit] = useState("");
+  const [saving, setSaving] = useState(false);
 
-      const [{ data: logRows }, { data: eventRows }] = await Promise.all([
+  // Scan-a-reading (camera / photo)
+  const [scanning, setScanning] = useState(false);
+  const [scanError, setScanError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function loadAll() {
+    const monthStart = new Date();
+    monthStart.setDate(1);
+    monthStart.setHours(0, 0, 0, 0);
+    const monthEnd = new Date(monthStart);
+    monthEnd.setMonth(monthEnd.getMonth() + 1);
+
+    const [{ data: logRows }, { data: eventRows }, { data: recentRows }] =
+      await Promise.all([
         supabase
           .from("hormone_logs")
           .select("*")
@@ -38,11 +59,20 @@ export function Monitoring() {
           .select("*")
           .gte("scheduled_at", monthStart.toISOString())
           .lt("scheduled_at", monthEnd.toISOString()),
+        supabase
+          .from("hormone_logs")
+          .select("*")
+          .order("measured_on", { ascending: false })
+          .limit(3),
       ]);
-      setLogs((logRows as HormoneLog[]) ?? []);
-      setEvents((eventRows as ScheduleEvent[]) ?? []);
-      setLoading(false);
-    })();
+    setLogs((logRows as HormoneLog[]) ?? []);
+    setEvents((eventRows as ScheduleEvent[]) ?? []);
+    setRecent((recentRows as HormoneLog[]) ?? []);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    void loadAll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -53,6 +83,60 @@ export function Monitoring() {
       else next.add(key);
       return next;
     });
+  }
+
+  async function logReading() {
+    if (!value) return;
+    setSaving(true);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from("hormone_logs").insert({
+        user_id: user.id,
+        hormone,
+        value: Number(value),
+        unit: unit || DEFAULT_UNITS[hormone],
+        measured_on: new Date().toISOString().slice(0, 10),
+      });
+      setValue("");
+      setUnit("");
+      await loadAll();
+    }
+    setSaving(false);
+  }
+
+  async function onScanFile(file: File) {
+    setScanning(true);
+    setScanError(null);
+    try {
+      const dataUrl: string = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const [, base64] = dataUrl.split(",");
+      const res = await fetch("/api/scan-reading", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          imageBase64: base64,
+          mediaType: file.type || "image/jpeg",
+        }),
+      });
+      const data = await res.json();
+      if (data.hormone && data.value != null) {
+        setHormone(data.hormone as HormoneKey);
+        setValue(String(data.value));
+        setUnit(data.unit || DEFAULT_UNITS[data.hormone as HormoneKey]);
+      } else {
+        setScanError(t.monitoring.scanNotFound);
+      }
+    } catch {
+      setScanError(t.monitoring.scanFailed);
+    }
+    setScanning(false);
   }
 
   const calendarDays = useMemo(() => {
@@ -176,26 +260,132 @@ export function Monitoring() {
         </div>
       </Card>
 
-      {/* Hormone flashcards */}
+      {/* Track a hormone (moved here from Home) + scan-a-reading */}
+      <h2 className="mb-3 mt-8 font-display text-lg text-white">{t.dashboard.trackWidget}</h2>
+      <Card className="space-y-4">
+        <div className="grid grid-cols-1 gap-3">
+          <Select
+            value={hormone}
+            onChange={(e) => setHormone(e.target.value as HormoneKey)}
+          >
+            {HORMONE_KEYS.map((h) => (
+              <option key={h} value={h}>
+                {t.track.hormones[h]}
+              </option>
+            ))}
+          </Select>
+          <Input
+            type="number"
+            inputMode="decimal"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder={t.track.value}
+          />
+          <Button onClick={logReading} disabled={saving || !value}>
+            {saving && <Spinner />}
+            {t.dashboard.logReading}
+          </Button>
+        </div>
+
+        <div className="border-t border-line pt-4">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) void onScanFile(file);
+              e.target.value = "";
+            }}
+          />
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={scanning}
+          >
+            {scanning ? <Spinner /> : "📷"}
+            {scanning ? t.monitoring.scanning : t.monitoring.scanButton}
+          </Button>
+          <p className="mt-2 text-xs text-faint">{t.monitoring.scanHint}</p>
+          {scanError && <p className="mt-2 text-sm text-berry-400">{scanError}</p>}
+        </div>
+
+        <div>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-faint">
+            {t.dashboard.recentReadings}
+          </p>
+          {loading ? (
+            <div className="flex justify-center py-3 text-muted">
+              <Spinner />
+            </div>
+          ) : recent.length === 0 ? (
+            <p className="text-sm text-faint">{t.dashboard.noReadings}</p>
+          ) : (
+            <ul className="space-y-1.5">
+              {recent.map((r) => (
+                <li key={r.id} className="flex items-baseline justify-between gap-3 text-sm">
+                  <span className="min-w-0 truncate text-white">
+                    {t.track.hormones[r.hormone as keyof typeof t.track.hormones] ?? r.hormone}
+                    <span className="ml-2 text-faint">
+                      {new Date(r.measured_on).toLocaleDateString(lang, {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
+                  </span>
+                  <span className="shrink-0 font-display text-berry-400">
+                    {r.value}
+                    <span className="ml-1 text-xs text-faint">{r.unit}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </Card>
+
+      {/* Hormone flashcards — a real card-flip animation, not just a content swap */}
       <h2 className="mb-1 mt-8 font-display text-lg text-white">{t.monitoring.flashcardsTitle}</h2>
       <p className="mb-3 text-sm text-muted">{t.monitoring.flashcardsHint}</p>
       <div className="grid gap-3">
         {HORMONE_KEYS.map((key) => {
           const isFlipped = flipped.has(key);
           return (
-            <button key={key} onClick={() => toggleFlip(key)} className="text-left">
-              <Card className="flex h-full min-h-[120px] flex-col justify-center transition hover:border-berry-400 hover:shadow-md">
-                {!isFlipped ? (
+            <button
+              key={key}
+              onClick={() => toggleFlip(key)}
+              className="text-left"
+              style={{ perspective: "1200px" }}
+            >
+              <div
+                className="relative min-h-[120px] w-full transition-transform duration-500"
+                style={{
+                  transformStyle: "preserve-3d",
+                  transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+                }}
+              >
+                <Card
+                  className="absolute inset-0 flex h-full flex-col justify-center transition hover:border-berry-400 hover:shadow-md"
+                  style={{ backfaceVisibility: "hidden" }}
+                >
                   <p className="font-display text-xl text-white">{t.track.hormones[key]}</p>
-                ) : (
-                  <div>
-                    <p className="text-sm text-muted">
-                      {lang === "fr" ? HORMONE_FACTS[key].fr : HORMONE_FACTS[key].en}
-                    </p>
-                    <p className="mt-2 text-xs text-faint">{t.monitoring.flashcardsFactNote}</p>
-                  </div>
-                )}
-              </Card>
+                </Card>
+                <Card
+                  className="absolute inset-0 flex h-full flex-col justify-center"
+                  style={{
+                    backfaceVisibility: "hidden",
+                    transform: "rotateY(180deg)",
+                  }}
+                >
+                  <p className="text-sm text-muted">
+                    {lang === "fr" ? HORMONE_FACTS[key].fr : HORMONE_FACTS[key].en}
+                  </p>
+                  <p className="mt-2 text-xs text-faint">{t.monitoring.flashcardsFactNote}</p>
+                </Card>
+              </div>
             </button>
           );
         })}

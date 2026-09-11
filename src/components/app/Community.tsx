@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useLanguage } from "@/lib/i18n/provider";
@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/app/PageHeader";
 import { Button, Card, Spinner, Textarea } from "@/components/ui";
 import { COMMUNITY_TOPICS, topicForStage } from "@/lib/community";
 import { deriveStages } from "@/components/app/Journey";
+import { Chat } from "@/components/app/Chat";
 import type {
   CommunityPost,
   CommunityReply,
@@ -26,6 +27,17 @@ export function Community() {
   const [replyDrafts, setReplyDrafts] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [posting, setPosting] = useState(false);
+  const composeRef = useRef<HTMLTextAreaElement>(null);
+
+  function selectTopic(key: CommunityTopic) {
+    setTopic(key);
+    // Jump straight to the compose box, per request: picking a topic should
+    // feel like it opens straight to typing, not just switch a filter.
+    setTimeout(() => {
+      composeRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      composeRef.current?.focus();
+    }, 50);
+  }
 
   useEffect(() => {
     (async () => {
@@ -123,7 +135,7 @@ export function Community() {
       <h2 className="mb-3 font-display text-lg text-white">{t.community.topicsSubtitle}</h2>
       <div className="grid grid-cols-2 gap-3">
         {COMMUNITY_TOPICS.map(({ key, emoji }) => (
-          <button key={key} onClick={() => setTopic(key)} className="text-left">
+          <button key={key} onClick={() => selectTopic(key)} className="text-left">
             <Card
               className={`flex flex-col items-center gap-2 py-5 text-center transition hover:border-berry-400 ${
                 topic === key ? "border-berry-400 bg-blush-50" : ""
@@ -145,6 +157,7 @@ export function Community() {
         <div className="mt-6">
           <Card className="space-y-3">
             <Textarea
+              ref={composeRef}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               placeholder={t.community.composePlaceholder}
@@ -206,15 +219,12 @@ export function Community() {
         <p className="text-xs text-muted">{t.community.disclaimer}</p>
       </Card>
 
-      <Link href="/app/chat">
-        <Card className="mt-4 flex items-center justify-between gap-3 transition hover:border-berry-400">
-          <div>
-            <p className="font-medium text-white">{t.community.askMaeveTitle}</p>
-            <p className="text-sm text-muted">{t.community.askMaeveBody}</p>
-          </div>
-          <span className="shrink-0 text-berry-500">→</span>
-        </Card>
-      </Link>
+      {/* Ask Maeve — embedded and already open, not a link to click through to */}
+      <div className="mt-6">
+        <p className="font-display text-lg text-white">{t.community.askMaeveTitle}</p>
+        <p className="mb-3 text-sm text-muted">{t.community.askMaeveBody}</p>
+        <Chat compact />
+      </div>
 
       <Link href="/app/portals">
         <Card className="mt-3 flex items-center justify-between gap-3 transition hover:border-berry-400">

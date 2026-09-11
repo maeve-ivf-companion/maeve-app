@@ -114,12 +114,12 @@ function PartnerSide({
 
   return (
     <div className="space-y-6">
+      <MoodHistory patientId={profile.paired_with} />
       <h2 className="font-display text-xl text-white">{t.partner.partnerViewTitle}</h2>
       <PartnerBrief role="partner" />
       {partnerName && (
         <p className="text-sm text-muted">{fmt(t.partner.connected, { name: partnerName })}</p>
       )}
-      <MoodHistory patientId={profile.paired_with} />
       <PartnerNotes profile={profile} otherName={partnerName} />
     </div>
   );
@@ -184,6 +184,9 @@ function PatientSide({
 
   return (
     <div className="space-y-6">
+      {/* Mood tracking support comes first, per request */}
+      <MoodHistory patientId={profile.id} />
+
       <Card className="space-y-2">
         <p className="font-display text-lg text-white">{t.partner.patientTitle}</p>
         <p className="text-sm text-muted">{t.partner.patientBody}</p>
@@ -279,9 +282,6 @@ function PatientSide({
 
       {/* Support checklist */}
       <SupportChecklist profile={profile} />
-
-      {/* Historical mood + predicted hard times */}
-      <MoodHistory patientId={profile.id} />
 
       {/* Notes for each other */}
       <PartnerNotes profile={profile} otherName={partnerName} />

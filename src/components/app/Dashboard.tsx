@@ -8,12 +8,12 @@ import { fmt } from "@/lib/i18n/format";
 import { Card, Spinner } from "@/components/ui";
 import { PartnerBrief } from "@/components/app/PartnerBrief";
 import { ScheduleWidget } from "@/components/app/ScheduleWidget";
-import { TrackWidget } from "@/components/app/TrackWidget";
 import { HormoneSnapshot } from "@/components/app/HormoneSnapshot";
 import { QuickMoodCheck } from "@/components/app/QuickMoodCheck";
 import { TodaysChecklist } from "@/components/app/TodaysChecklist";
 import { CupQuestion } from "@/components/app/CupQuestion";
 import { CommunityTeaser } from "@/components/app/CommunityTeaser";
+import { deriveStages } from "@/components/app/Journey";
 import type { Profile, ScheduleEvent } from "@/lib/supabase/types";
 
 function greeting(t: ReturnType<typeof useLanguage>["t"]) {
@@ -28,6 +28,7 @@ export function Dashboard() {
   const supabase = createClient();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [next, setNext] = useState<ScheduleEvent | null>(null);
+  const [allEvents, setAllEvents] = useState<ScheduleEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,13 +43,17 @@ export function Dashboard() {
         .eq("id", user.id)
         .single();
       setProfile(prof as Profile);
-      const { data: ev } = await supabase
-        .from("schedule_events")
-        .select("*")
-        .gte("scheduled_at", new Date().toISOString())
-        .order("scheduled_at", { ascending: true })
-        .limit(1);
+      const [{ data: ev }, { data: all }] = await Promise.all([
+        supabase
+          .from("schedule_events")
+          .select("*")
+          .gte("scheduled_at", new Date().toISOString())
+          .order("scheduled_at", { ascending: true })
+          .limit(1),
+        supabase.from("schedule_events").select("*").eq("user_id", user.id),
+      ]);
       setNext((ev?.[0] as ScheduleEvent) ?? null);
+      setAllEvents((all as ScheduleEvent[]) ?? []);
       setLoading(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -70,6 +75,9 @@ export function Dashboard() {
         ) + 1
       )
     : null;
+
+  const stages = deriveStages(profile, allEvents);
+  const currentStage = stages.find((s) => s.status === "current") ?? null;
 
   // Partner role lands on their brief.
   if (profile?.role === "partner") {
@@ -104,6 +112,12 @@ export function Dashboard() {
         )}
       </div>
 
+      {/* Hormone Target snapshot (PDF page 3) */}
+      <HormoneSnapshot />
+
+      {/* Quick mood check (PDF page 3) */}
+      <QuickMoodCheck />
+
       {/* Next up */}
       <Card className="bg-brand-gradient border-0 text-white">
         <p className="text-sm text-white/70">{t.dashboard.quickSchedule}</p>
@@ -127,19 +141,20 @@ export function Dashboard() {
         )}
       </Card>
 
-      {/* Journey teaser */}
+      {/* Current stage (replaces the old generic "Your journey" link) */}
       <Link href="/app/journey">
         <Card className="flex items-center justify-between gap-3 transition hover:border-berry-400">
-          <p className="font-medium text-white">{t.journey.dashboardLink}</p>
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-wide text-faint">
+              {t.journey.dashboardLink}
+            </p>
+            <p className="mt-0.5 font-medium text-white">
+              {currentStage ? t.journey.stages[currentStage.key] : t.journey.noCycle}
+            </p>
+          </div>
           <span className="shrink-0 text-berry-500">→</span>
         </Card>
       </Link>
-
-      {/* Hormone Target snapshot (PDF page 3) */}
-      <HormoneSnapshot />
-
-      {/* Quick mood check (PDF page 3) */}
-      <QuickMoodCheck />
 
       {/* Today's checklist (PDF page 3) */}
       <TodaysChecklist />
@@ -152,9 +167,6 @@ export function Dashboard() {
 
       {/* Schedule widget */}
       <ScheduleWidget />
-
-      {/* Track widget */}
-      <TrackWidget />
 
       {/* Partner connection state */}
       {profile?.paired_with ? (

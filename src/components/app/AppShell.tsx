@@ -89,42 +89,43 @@ export function AppShell({
           </div>
         </header>
 
-        {/* Content */}
-        <main className="flex-1">
+        {/* Content — bottom padding reserves space for the fixed nav below */}
+        <main className="flex-1 pb-24">
           <div className="px-4 py-6">{children}</div>
         </main>
+      </div>
 
-        {/* App-style bottom navigation, flush with the bottom of the app like a native tab bar */}
-        <nav className="sticky bottom-0 z-30 border-t border-line bg-cream/95 backdrop-blur">
-          <div className="flex items-stretch justify-around gap-1 px-2 py-1.5">
-            {items.map((it) => {
-              const active = isActive(it.href);
-              return (
-                <Link
-                  key={it.href}
-                  href={it.href}
-                  aria-label={it.label}
-                  aria-current={active ? "page" : undefined}
-                  className={`flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 transition ${
-                    active ? "text-berry-500" : "text-faint hover:text-white"
+      {/* App-style bottom navigation: truly fixed to the viewport, so it never
+          scrolls out of view, centered to match the phone-width column above. */}
+      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-cream/95 backdrop-blur">
+        <div className="mx-auto flex max-w-[440px] items-stretch justify-around gap-1 px-2 py-1.5">
+          {items.map((it) => {
+            const active = isActive(it.href);
+            return (
+              <Link
+                key={it.href}
+                href={it.href}
+                aria-label={it.label}
+                aria-current={active ? "page" : undefined}
+                className={`flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 transition ${
+                  active ? "text-berry-500" : "text-faint hover:text-white"
+                }`}
+              >
+                <span
+                  className={`flex h-9 w-9 items-center justify-center rounded-full transition ${
+                    active ? "bg-blush-100" : "bg-transparent"
                   }`}
                 >
-                  <span
-                    className={`flex h-9 w-9 items-center justify-center rounded-full transition ${
-                      active ? "bg-blush-100" : "bg-transparent"
-                    }`}
-                  >
-                    <Icon d={it.d} />
-                  </span>
-                  <span className="max-w-full truncate text-[10px] font-medium">
-                    {it.label}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        </nav>
-      </div>
+                  <Icon d={it.d} />
+                </span>
+                <span className="max-w-full truncate text-[10px] font-medium">
+                  {it.label}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }
