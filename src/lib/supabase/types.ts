@@ -30,6 +30,12 @@ export type CommunityTopic =
   | "questions";
 export type Mood = 1 | 2 | 3; // 1 good, 2 neutral, 3 hard
 export type ConnectionMode = "partner" | "mee";
+export type SharedItemKey =
+  | "medTimes"
+  | "fridgeReminder"
+  | "cycleDay"
+  | "hormoneTrends"
+  | "moodToday";
 
 export type Profile = {
   id: string;
@@ -62,6 +68,7 @@ export type Profile = {
   notif_opt_in: boolean;
   happy_thing: string | null;
   connection_mode: ConnectionMode;
+  shared_items: SharedItemKey[];
 };
 
 export type Medication = {

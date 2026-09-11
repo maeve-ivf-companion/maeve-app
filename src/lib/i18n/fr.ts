@@ -348,18 +348,18 @@ export const fr: Dictionary = {
     connectionMeeHint:
       "Pas encore de partenaire humain ? Mee prend le relais avec les mêmes suivis et encouragements en douceur.",
     shareLevelTitle: "Que souhaitez-vous partager ?",
+    shareLevelHint: "Touchez une carte pour personnaliser exactement ce qui est inclus.",
     shareLevelMinimalTitle: "Minimal",
-    shareLevelMinimalItems: [
-      "Heures des médicaments",
-      "Rappels pour sortir les médicaments du réfrigérateur",
-      "Jour du cycle / traitement",
-    ],
     shareLevelMaximalTitle: "Maximal",
-    shareLevelMaximalItems: [
-      "Tout ce qui est dans Minimal",
-      "Aperçus généraux de la tendance hormonale (pas les mesures brutes)",
-      "Humeur ce matin",
-    ],
+    shareItems: {
+      medTimes: "Heures des médicaments",
+      fridgeReminder: "Rappels pour sortir les médicaments du réfrigérateur",
+      cycleDay: "Jour du cycle / traitement",
+      hormoneTrends: "Aperçus généraux de la tendance hormonale (pas les mesures brutes)",
+      moodToday: "Humeur ce matin",
+    },
+    shareItemsPickerTitle: "Choisissez quoi partager",
+    shareItemsPickerHint: "Cochez ce que vous aimeriez que votre partenaire voie. Vous pouvez changer cela à tout moment.",
     checklistTitle: "Liste de soutien",
     checklistDayOf: "Jour {n} du cycle/traitement",
     checklistMedTimes: "Heures des médicaments",

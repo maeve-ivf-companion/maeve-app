@@ -6,8 +6,25 @@ import { useLanguage } from "@/lib/i18n/provider";
 import { fmt } from "@/lib/i18n/format";
 import { PageHeader } from "@/components/app/PageHeader";
 import { PartnerBrief } from "@/components/app/PartnerBrief";
-import { Button, Card, Input, Label, Spinner, Textarea } from "@/components/ui";
-import type { ConnectionMode, MoodCheckin, PartnerNote, Profile, SharingLevel } from "@/lib/supabase/types";
+import { Button, Card, Input, Label, Modal, Spinner, Textarea } from "@/components/ui";
+import type {
+  ConnectionMode,
+  MoodCheckin,
+  PartnerNote,
+  Profile,
+  SharedItemKey,
+  SharingLevel,
+} from "@/lib/supabase/types";
+
+const ITEM_KEYS: SharedItemKey[] = [
+  "medTimes",
+  "fridgeReminder",
+  "cycleDay",
+  "hormoneTrends",
+  "moodToday",
+];
+const MINIMAL_DEFAULTS: SharedItemKey[] = ["medTimes", "fridgeReminder", "cycleDay"];
+const MAXIMAL_DEFAULTS: SharedItemKey[] = ITEM_KEYS;
 
 export function PartnerHub() {
   const { t } = useLanguage();
@@ -140,6 +157,11 @@ function PatientSide({
   const [copied, setCopied] = useState(false);
   const [connectionMode, setConnectionMode] = useState<ConnectionMode>(profile.connection_mode);
   const [sharing, setSharing] = useState<SharingLevel>(profile.partner_sharing_level);
+  const [sharedItems, setSharedItems] = useState<SharedItemKey[]>(
+    profile.shared_items?.length ? profile.shared_items : MINIMAL_DEFAULTS
+  );
+  const [picker, setPicker] = useState<"minimal" | "maximal" | null>(null);
+  const [pickerSelection, setPickerSelection] = useState<Set<SharedItemKey>>(new Set());
   const [mood, setMood] = useState(2);
   const [note, setNote] = useState("");
   const [sending, setSending] = useState(false);
@@ -159,12 +181,41 @@ function PatientSide({
 
   // Minimal maps to the existing "schedule" sharing level; Maximal maps to
   // "full". hormone_logs stays owner-only at every level (AGENTS.md rule 6),
-  // so "Maximal" surfaces trend insights, never raw readings.
+  // so hormoneTrends only ever surfaces trend insights, never raw readings,
+  // regardless of which items are individually toggled on.
   const isMaximal = sharing === "full";
-  async function setShareLevel(maximal: boolean) {
-    const level: SharingLevel = maximal ? "full" : "schedule";
+
+  function openPicker(level: "minimal" | "maximal") {
+    const isCurrentLevel = sharing === (level === "minimal" ? "schedule" : "full");
+    const base = isCurrentLevel && sharedItems.length
+      ? sharedItems
+      : level === "minimal"
+        ? MINIMAL_DEFAULTS
+        : MAXIMAL_DEFAULTS;
+    setPickerSelection(new Set(base));
+    setPicker(level);
+  }
+
+  function toggleItem(key: SharedItemKey) {
+    setPickerSelection((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }
+
+  async function savePicker() {
+    if (!picker) return;
+    const level: SharingLevel = picker === "minimal" ? "schedule" : "full";
+    const items = Array.from(pickerSelection);
     setSharing(level);
-    await supabase.from("profiles").update({ partner_sharing_level: level }).eq("id", profile.id);
+    setSharedItems(items);
+    await supabase
+      .from("profiles")
+      .update({ partner_sharing_level: level, shared_items: items })
+      .eq("id", profile.id);
+    setPicker(null);
   }
 
   async function sendBrief() {
@@ -247,38 +298,80 @@ function PatientSide({
         </Card>
       )}
 
-      {/* Minimal / Maximal share level */}
+      {/* Minimal / Maximal share level — tap either to open a picker and
+          customize exactly which items are included, rather than only
+          choosing between two fixed presets. */}
       <Card className="space-y-3">
         <Label>{t.partner.shareLevelTitle}</Label>
+        <p className="-mt-2 text-xs text-faint">{t.partner.shareLevelHint}</p>
         <div className="grid gap-3">
           <button
-            onClick={() => setShareLevel(false)}
+            onClick={() => openPicker("minimal")}
             className={`rounded-xl border p-4 text-left transition ${
               !isMaximal ? "border-berry-400 bg-berry-500/25" : "border-line hover:border-berry-300"
             }`}
           >
             <p className="font-semibold text-white">{t.partner.shareLevelMinimalTitle}</p>
             <ul className="mt-2 space-y-1 text-sm text-muted">
-              {t.partner.shareLevelMinimalItems.map((item) => (
-                <li key={item}>• {item}</li>
+              {(!isMaximal && sharedItems.length ? sharedItems : MINIMAL_DEFAULTS).map((key) => (
+                <li key={key}>• {t.partner.shareItems[key]}</li>
               ))}
             </ul>
           </button>
           <button
-            onClick={() => setShareLevel(true)}
+            onClick={() => openPicker("maximal")}
             className={`rounded-xl border p-4 text-left transition ${
               isMaximal ? "border-berry-400 bg-berry-500/25" : "border-line hover:border-berry-300"
             }`}
           >
             <p className="font-semibold text-white">{t.partner.shareLevelMaximalTitle}</p>
             <ul className="mt-2 space-y-1 text-sm text-muted">
-              {t.partner.shareLevelMaximalItems.map((item) => (
-                <li key={item}>• {item}</li>
+              {(isMaximal && sharedItems.length ? sharedItems : MAXIMAL_DEFAULTS).map((key) => (
+                <li key={key}>• {t.partner.shareItems[key]}</li>
               ))}
             </ul>
           </button>
         </div>
       </Card>
+
+      <Modal
+        open={picker !== null}
+        onClose={() => setPicker(null)}
+        title={t.partner.shareItemsPickerTitle}
+      >
+        <p className="mb-4 text-sm text-muted">{t.partner.shareItemsPickerHint}</p>
+        <div className="space-y-2">
+          {ITEM_KEYS.map((key) => {
+            const checked = pickerSelection.has(key);
+            return (
+              <button
+                key={key}
+                onClick={() => toggleItem(key)}
+                className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition ${
+                  checked ? "border-berry-400 bg-berry-500/25" : "border-line hover:border-berry-300"
+                }`}
+              >
+                <span
+                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 text-xs ${
+                    checked ? "border-berry-500 bg-berry-500 text-white" : "border-line text-transparent"
+                  }`}
+                >
+                  ✓
+                </span>
+                <span className="text-sm text-white">{t.partner.shareItems[key]}</span>
+              </button>
+            );
+          })}
+        </div>
+        <div className="mt-5 flex gap-2">
+          <Button variant="outline" className="flex-1" onClick={() => setPicker(null)}>
+            {t.common.cancel}
+          </Button>
+          <Button className="flex-1" onClick={savePicker}>
+            {t.common.save}
+          </Button>
+        </div>
+      </Modal>
 
       {/* Support checklist */}
       <SupportChecklist profile={profile} />

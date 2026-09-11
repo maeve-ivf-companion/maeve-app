@@ -346,18 +346,18 @@ export const en = {
     connectionMeeHint:
       "No human partner yet? Mee steps in with the same gentle check-ins and support prompts.",
     shareLevelTitle: "What would you like to share?",
+    shareLevelHint: "Tap a card to customize exactly what's included.",
     shareLevelMinimalTitle: "Minimal",
-    shareLevelMinimalItems: [
-      "Medication times",
-      "Reminders to take medication out of the fridge",
-      "Day of cycle / treatment",
-    ],
     shareLevelMaximalTitle: "Maximal",
-    shareLevelMaximalItems: [
-      "Everything in Minimal",
-      "General hormone trend insights (not raw readings)",
-      "Mood this morning",
-    ],
+    shareItems: {
+      medTimes: "Medication times",
+      fridgeReminder: "Reminders to take medication out of the fridge",
+      cycleDay: "Day of cycle / treatment",
+      hormoneTrends: "General hormone trend insights (not raw readings)",
+      moodToday: "Mood this morning",
+    },
+    shareItemsPickerTitle: "Choose what to share",
+    shareItemsPickerHint: "Check anything you'd like your partner to see. You can change this anytime.",
     checklistTitle: "Support Checklist",
     checklistDayOf: "Day {n} of cycle/treatment",
     checklistMedTimes: "Medication times",
