@@ -105,7 +105,7 @@ export function ScheduleWidget() {
       </div>
 
       {pingFor && (
-        <div className="rounded-xl bg-blush-100 p-3">
+        <div className="rounded-xl bg-berry-500/25 p-3">
           <p className="mb-2 text-sm font-medium text-white">
             {fmt(t.partner.feelingPingPrompt, { title: pingFor.title })}
           </p>

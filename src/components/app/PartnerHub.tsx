@@ -254,7 +254,7 @@ function PatientSide({
           <button
             onClick={() => setShareLevel(false)}
             className={`rounded-xl border p-4 text-left transition ${
-              !isMaximal ? "border-berry-400 bg-blush-50" : "border-line hover:border-berry-300"
+              !isMaximal ? "border-berry-400 bg-berry-500/25" : "border-line hover:border-berry-300"
             }`}
           >
             <p className="font-semibold text-white">{t.partner.shareLevelMinimalTitle}</p>
@@ -267,7 +267,7 @@ function PatientSide({
           <button
             onClick={() => setShareLevel(true)}
             className={`rounded-xl border p-4 text-left transition ${
-              isMaximal ? "border-berry-400 bg-blush-50" : "border-line hover:border-berry-300"
+              isMaximal ? "border-berry-400 bg-berry-500/25" : "border-line hover:border-berry-300"
             }`}
           >
             <p className="font-semibold text-white">{t.partner.shareLevelMaximalTitle}</p>
