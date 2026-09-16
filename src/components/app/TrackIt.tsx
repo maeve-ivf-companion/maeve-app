@@ -220,11 +220,11 @@ export function TrackIt() {
 
         {interpretation && (
           <div className="rounded-xl bg-plum-50 p-4">
-            <p className="text-sm font-semibold text-white">
+            <p className="text-sm font-semibold text-plum-700">
               {t.track.interpretationTitle}
             </p>
-            <p className="mt-1 text-sm text-muted">{interpretation}</p>
-            <p className="mt-3 text-xs text-faint">{t.common.notMedicalAdvice}</p>
+            <p className="mt-1 text-sm text-plum-700/80">{interpretation}</p>
+            <p className="mt-3 text-xs text-plum-700/60">{t.common.notMedicalAdvice}</p>
           </div>
         )}
       </Card>

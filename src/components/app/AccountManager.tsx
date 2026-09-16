@@ -278,12 +278,13 @@ export function AccountManager() {
         <h2 className="font-display text-lg text-berry-600">
           {t.account.dangerTitle}
         </h2>
-        <p className="text-sm text-muted">{t.account.dangerBody}</p>
-        <p className="text-sm text-muted">{t.account.deleteConfirm}</p>
+        <p className="text-sm text-plum-700/80">{t.account.dangerBody}</p>
+        <p className="text-sm text-plum-700/80">{t.account.deleteConfirm}</p>
         <Input
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
           placeholder="DELETE"
+          className="bg-white text-plum-700 placeholder:text-plum-700/40"
         />
         <Button
           onClick={deleteData}

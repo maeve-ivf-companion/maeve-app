@@ -106,6 +106,22 @@ export const fr: Dictionary = {
     marketingLabel:
       "Envoyez-moi des nouvelles de Maman Biomedical sur Maeve, des ressources sur la FIV et les nouveautés.",
     marketingHint: "Facultatif. Vous pouvez vous désabonner à tout moment.",
+    forgotPassword: "Mot de passe oublié ?",
+    forgotPasswordTitle: "Réinitialiser votre mot de passe",
+    forgotPasswordSubtitle:
+      "Entrez votre courriel et nous vous enverrons un lien sécurisé pour en choisir un nouveau.",
+    forgotPasswordSend: "Envoyer le lien",
+    forgotPasswordSending: "Envoi en cours…",
+    forgotPasswordSent:
+      "Vérifiez votre boîte de réception. Si ce courriel a un compte, nous lui avons envoyé un lien de réinitialisation.",
+    backToSignIn: "Retour à la connexion",
+    resetPasswordTitle: "Choisir un nouveau mot de passe",
+    resetPasswordSubtitle: "Choisissez un nouveau mot de passe pour votre compte.",
+    newPassword: "Nouveau mot de passe",
+    resetPasswordSave: "Enregistrer le nouveau mot de passe",
+    resetPasswordSaving: "Enregistrement…",
+    resetLinkInvalid:
+      "Ce lien de réinitialisation est invalide ou a expiré. Demandez-en un nouveau.",
   },
   onboarding: {
     title: "Configurons votre Maeve",

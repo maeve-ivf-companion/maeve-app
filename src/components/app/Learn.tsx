@@ -76,8 +76,8 @@ export function Learn() {
         </div>
         {answer && (
           <div className="rounded-xl bg-plum-50 p-4">
-            <p className="text-sm text-white">{answer}</p>
-            <p className="mt-3 text-xs text-faint">
+            <p className="text-sm text-plum-700">{answer}</p>
+            <p className="mt-3 text-xs text-plum-700/60">
               {t.common.notMedicalAdvice}
             </p>
           </div>

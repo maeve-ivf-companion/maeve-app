@@ -135,7 +135,17 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
           />
         </div>
         <div>
-          <Label htmlFor="password">{t.auth.password}</Label>
+          <div className="flex items-baseline justify-between">
+            <Label htmlFor="password">{t.auth.password}</Label>
+            {mode === "signin" && (
+              <Link
+                href="/forgot-password"
+                className="text-sm font-medium text-berry-500 hover:text-berry-600"
+              >
+                {t.auth.forgotPassword}
+              </Link>
+            )}
+          </div>
           <PasswordInput
             id="password"
             autoComplete={mode === "signup" ? "new-password" : "current-password"}

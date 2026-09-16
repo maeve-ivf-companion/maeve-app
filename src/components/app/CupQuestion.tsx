@@ -34,7 +34,7 @@ export function CupQuestion() {
       <p className="font-display text-lg text-white">{t.dashboard.cupTitle}</p>
       {saved ? (
         <div className="rounded-xl bg-plum-50 p-4">
-          <p className="text-sm text-muted">{t.dashboard.cupSaved}</p>
+          <p className="text-sm text-plum-700/80">{t.dashboard.cupSaved}</p>
           <Link href="/app/partner" className="mt-2 inline-block text-sm font-medium text-berry-500">
             {t.dashboard.cupSeeSupport} →
           </Link>

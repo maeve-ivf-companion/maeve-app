@@ -409,8 +409,8 @@ function PatientSide({
         {!profile.paired_with && <p className="text-sm text-faint">{t.partner.codeHint}</p>}
         {preview && (
           <div className="rounded-xl bg-plum-50 p-4">
-            <p className="text-sm text-muted">{t.partner.briefToday}</p>
-            <p className="mt-1 font-display text-lg text-white">“{preview}”</p>
+            <p className="text-sm text-plum-700/80">{t.partner.briefToday}</p>
+            <p className="mt-1 font-display text-lg text-plum-700">“{preview}”</p>
           </div>
         )}
       </Card>

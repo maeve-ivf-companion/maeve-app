@@ -104,6 +104,22 @@ export const en = {
     marketingLabel:
       "Send me updates from Maman Biomedical about Maeve, IVF resources, and new features.",
     marketingHint: "Optional. You can unsubscribe at any time.",
+    forgotPassword: "Forgot password?",
+    forgotPasswordTitle: "Reset your password",
+    forgotPasswordSubtitle:
+      "Enter your email and we'll send you a secure link to set a new one.",
+    forgotPasswordSend: "Send reset link",
+    forgotPasswordSending: "Sending…",
+    forgotPasswordSent:
+      "Check your inbox. If that email has an account, we've sent a link to reset the password.",
+    backToSignIn: "Back to sign in",
+    resetPasswordTitle: "Set a new password",
+    resetPasswordSubtitle: "Choose a new password for your account.",
+    newPassword: "New password",
+    resetPasswordSave: "Save new password",
+    resetPasswordSaving: "Saving…",
+    resetLinkInvalid:
+      "This reset link is invalid or has expired. Request a new one.",
   },
   onboarding: {
     title: "Let's set up your Maeve",

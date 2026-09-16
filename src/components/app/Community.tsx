@@ -216,7 +216,7 @@ export function Community() {
       )}
 
       <Card className="mt-6 bg-blush-50">
-        <p className="text-xs text-muted">{t.community.disclaimer}</p>
+        <p className="text-xs text-plum-700/70">{t.community.disclaimer}</p>
       </Card>
 
       {/* Ask Maeve — embedded and already open, not a link to click through to */}
