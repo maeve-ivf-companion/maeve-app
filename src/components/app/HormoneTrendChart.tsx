@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useLanguage } from "@/lib/i18n/provider";
 import type { HormoneLog } from "@/lib/supabase/types";
 
@@ -15,14 +15,19 @@ export function HormoneTrendChart({
   low,
   high,
   unit,
+  color = "#c2185b",
 }: {
   logs: HormoneLog[];
   low: number;
   high: number;
   unit: string;
+  /** Accent color for this hormone's line/fill/dots — lets different
+   * hormones read as visually distinct at a glance. */
+  color?: string;
 }) {
   const { lang } = useLanguage();
   const [selected, setSelected] = useState<number | null>(null);
+  const gradientId = `trendFill-${useId()}`;
 
   const W = 320;
   const H = 140;
@@ -56,9 +61,9 @@ export function HormoneTrendChart({
         aria-label="Hormone trend chart"
       >
         <defs>
-          <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#c2185b" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="#c2185b" stopOpacity="0" />
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity="0.45" />
+            <stop offset="100%" stopColor={color} stopOpacity="0" />
           </linearGradient>
         </defs>
 
@@ -77,15 +82,15 @@ export function HormoneTrendChart({
 
         {points.length > 0 && (
           <>
-            <path d={areaPath} fill="url(#trendFill)" />
-            <path d={linePath} fill="none" stroke="#f48fb1" strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" />
+            <path d={areaPath} fill={`url(#${gradientId})`} />
+            <path d={linePath} fill="none" stroke={color} strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" />
             {points.map((p, i) => (
               <circle
                 key={p.log.id}
                 cx={p.x}
                 cy={p.y}
                 r={selected === i ? 6 : 4}
-                fill={selected === i ? "#ffffff" : "#c2185b"}
+                fill={selected === i ? "#ffffff" : color}
                 stroke="#ffffff"
                 strokeWidth={selected === i ? 2.5 : 1.5}
                 className="cursor-pointer transition-all"

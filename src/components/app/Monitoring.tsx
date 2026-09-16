@@ -5,11 +5,11 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useLanguage } from "@/lib/i18n/provider";
 import { PageHeader } from "@/components/app/PageHeader";
-import { Button, Card, Input, Modal, Select, Spinner } from "@/components/ui";
-import { EVENT_TYPE_ACCENT, EVENT_TYPE_ICON } from "@/lib/eventTypes";
-import { HORMONE_FACTS, HORMONE_KEYS, HORMONE_REFERENCE, type HormoneKey } from "@/lib/hormones";
+import { Button, Card, Input, Label, Modal, Select, Spinner } from "@/components/ui";
+import { EVENT_TYPES, EVENT_TYPE_ACCENT, EVENT_TYPE_ICON } from "@/lib/eventTypes";
+import { HORMONE_COLOR, HORMONE_FACTS, HORMONE_KEYS, HORMONE_REFERENCE, type HormoneKey } from "@/lib/hormones";
 import { HormoneTrendChart } from "@/components/app/HormoneTrendChart";
-import type { HormoneLog, ScheduleEvent } from "@/lib/supabase/types";
+import type { EventType, HormoneLog, ScheduleEvent } from "@/lib/supabase/types";
 
 const DEFAULT_UNITS: Record<HormoneKey, string> = {
   estradiol: "pg/mL",
@@ -30,6 +30,12 @@ export function Monitoring() {
   const [flipped, setFlipped] = useState<Set<HormoneKey>>(new Set());
   const [selectedDay, setSelectedDay] = useState<{ day: number; events: ScheduleEvent[] } | null>(null);
 
+  // Which hormone's trend the chart above shows — independent of the
+  // "track a hormone" add-form below, so scanning or logging a new reading
+  // doesn't unexpectedly swap what trend you're looking at.
+  const [trendHormone, setTrendHormone] = useState<HormoneKey>("estradiol");
+  const [trendLoading, setTrendLoading] = useState(true);
+
   // Track-a-hormone (moved here from Home)
   const [hormone, setHormone] = useState<HormoneKey>("estradiol");
   const [value, setValue] = useState("");
@@ -41,6 +47,14 @@ export function Monitoring() {
   const [scanError, setScanError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Editing a treatment on the calendar (opened from a day's event list)
+  const [editingEvent, setEditingEvent] = useState<ScheduleEvent | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editType, setEditType] = useState<EventType>("injection");
+  const [editWhen, setEditWhen] = useState("");
+  const [editSaving, setEditSaving] = useState(false);
+  const [editDeleting, setEditDeleting] = useState(false);
+
   async function loadAll() {
     const monthStart = new Date();
     monthStart.setDate(1);
@@ -48,35 +62,83 @@ export function Monitoring() {
     const monthEnd = new Date(monthStart);
     monthEnd.setMonth(monthEnd.getMonth() + 1);
 
-    const [{ data: logRows }, { data: eventRows }, { data: recentRows }] =
-      await Promise.all([
-        supabase
-          .from("hormone_logs")
-          .select("*")
-          .eq("hormone", "estradiol")
-          .order("measured_on", { ascending: true })
-          .limit(12),
-        supabase
-          .from("schedule_events")
-          .select("*")
-          .gte("scheduled_at", monthStart.toISOString())
-          .lt("scheduled_at", monthEnd.toISOString()),
-        supabase
-          .from("hormone_logs")
-          .select("*")
-          .order("measured_on", { ascending: false })
-          .limit(3),
-      ]);
-    setLogs((logRows as HormoneLog[]) ?? []);
+    const [{ data: eventRows }, { data: recentRows }] = await Promise.all([
+      supabase
+        .from("schedule_events")
+        .select("*")
+        .gte("scheduled_at", monthStart.toISOString())
+        .lt("scheduled_at", monthEnd.toISOString()),
+      supabase
+        .from("hormone_logs")
+        .select("*")
+        .order("measured_on", { ascending: false })
+        .limit(3),
+    ]);
     setEvents((eventRows as ScheduleEvent[]) ?? []);
     setRecent((recentRows as HormoneLog[]) ?? []);
     setLoading(false);
+  }
+
+  async function loadTrend(h: HormoneKey) {
+    setTrendLoading(true);
+    const { data } = await supabase
+      .from("hormone_logs")
+      .select("*")
+      .eq("hormone", h)
+      .order("measured_on", { ascending: true })
+      .limit(12);
+    setLogs((data as HormoneLog[]) ?? []);
+    setTrendLoading(false);
   }
 
   useEffect(() => {
     void loadAll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    void loadTrend(trendHormone);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trendHormone]);
+
+  function toLocalInput(iso: string) {
+    const d = new Date(iso);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  function openEventEdit(e: ScheduleEvent) {
+    setEditingEvent(e);
+    setEditTitle(e.title);
+    setEditType(e.type);
+    setEditWhen(toLocalInput(e.scheduled_at));
+    setSelectedDay(null);
+  }
+
+  async function saveEventEdit() {
+    if (!editingEvent || !editTitle.trim() || !editWhen) return;
+    setEditSaving(true);
+    await supabase
+      .from("schedule_events")
+      .update({
+        title: editTitle.trim(),
+        type: editType,
+        scheduled_at: new Date(editWhen).toISOString(),
+      })
+      .eq("id", editingEvent.id);
+    setEditSaving(false);
+    setEditingEvent(null);
+    await loadAll();
+  }
+
+  async function deleteEventEdit() {
+    if (!editingEvent) return;
+    setEditDeleting(true);
+    await supabase.from("schedule_events").delete().eq("id", editingEvent.id);
+    setEditDeleting(false);
+    setEditingEvent(null);
+    await loadAll();
+  }
 
   function toggleFlip(key: HormoneKey) {
     setFlipped((prev) => {
@@ -188,7 +250,17 @@ export function Monitoring() {
             {t.monitoring.addReading}
           </Link>
         </div>
-        {loading ? (
+        <Select
+          value={trendHormone}
+          onChange={(e) => setTrendHormone(e.target.value as HormoneKey)}
+        >
+          {HORMONE_KEYS.map((h) => (
+            <option key={h} value={h}>
+              {t.track.hormones[h]}
+            </option>
+          ))}
+        </Select>
+        {trendLoading ? (
           <div className="flex justify-center py-8 text-muted">
             <Spinner />
           </div>
@@ -196,10 +268,12 @@ export function Monitoring() {
           <p className="text-sm text-faint">{t.track.empty}</p>
         ) : (
           <HormoneTrendChart
+            key={trendHormone}
             logs={logs}
-            low={HORMONE_REFERENCE.estradiol.low}
-            high={HORMONE_REFERENCE.estradiol.high}
-            unit={logs[0]?.unit || HORMONE_REFERENCE.estradiol.unit}
+            low={HORMONE_REFERENCE[trendHormone].low}
+            high={HORMONE_REFERENCE[trendHormone].high}
+            unit={logs[0]?.unit || HORMONE_REFERENCE[trendHormone].unit}
+            color={HORMONE_COLOR[trendHormone]}
           />
         )}
         <p className="text-xs text-faint">{t.monitoring.addReadingHint}</p>
@@ -273,14 +347,18 @@ export function Monitoring() {
         ) : (
           <div className="space-y-2">
             {selectedDay?.events.map((e) => (
-              <div key={e.id} className="flex items-center gap-3 rounded-xl border border-line p-3">
+              <button
+                key={e.id}
+                onClick={() => openEventEdit(e)}
+                className="flex w-full items-center gap-3 rounded-xl border border-line p-3 text-left transition hover:border-berry-400 hover:bg-white/5"
+              >
                 <span
                   className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg"
                   style={{ backgroundColor: `${EVENT_TYPE_ACCENT[e.type]}33` }}
                 >
                   {EVENT_TYPE_ICON[e.type]}
                 </span>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <p className="truncate font-medium text-white">{e.title}</p>
                   <p className="text-xs text-faint">
                     {t.schedule.types[e.type]} ·{" "}
@@ -290,8 +368,64 @@ export function Monitoring() {
                     })}
                   </p>
                 </div>
-              </div>
+                <span className="shrink-0 text-xs text-faint">{t.common.edit}</span>
+              </button>
             ))}
+          </div>
+        )}
+      </Modal>
+
+      <Modal
+        open={editingEvent !== null}
+        onClose={() => setEditingEvent(null)}
+        title={t.common.edit}
+      >
+        {editingEvent && (
+          <div className="space-y-4">
+            <div>
+              <Label>{t.schedule.eventTitle}</Label>
+              <Input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+            </div>
+            <div>
+              <Label>{t.schedule.type}</Label>
+              <Select
+                value={editType}
+                onChange={(e) => setEditType(e.target.value as EventType)}
+              >
+                {EVENT_TYPES.map((ty) => (
+                  <option key={ty} value={ty}>
+                    {t.schedule.types[ty]}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <div>
+              <Label>{t.schedule.when}</Label>
+              <Input
+                type="datetime-local"
+                value={editWhen}
+                onChange={(e) => setEditWhen(e.target.value)}
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={deleteEventEdit}
+                disabled={editDeleting || editSaving}
+              >
+                {editDeleting && <Spinner />}
+                {t.common.delete}
+              </Button>
+              <Button
+                className="flex-1"
+                onClick={saveEventEdit}
+                disabled={editSaving || editDeleting || !editTitle.trim() || !editWhen}
+              >
+                {editSaving && <Spinner />}
+                {t.common.save}
+              </Button>
+            </div>
           </div>
         )}
       </Modal>

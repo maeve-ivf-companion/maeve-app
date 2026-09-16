@@ -36,6 +36,18 @@ export const HORMONE_REFERENCE: Record<
   amh: { low: 1, high: 4, unit: "ng/mL" },
 };
 
+// One accent color per hormone, reusing the same hue family as
+// EVENT_TYPE_ACCENT so the app's data-viz palette stays coordinated rather
+// than introducing new one-off colors.
+export const HORMONE_COLOR: Record<HormoneKey, string> = {
+  estradiol: "#c2185b",
+  lh: "#5a6db5",
+  fsh: "#e8923a",
+  progesterone: "#7a4b9e",
+  hcg: "#2f8f7a",
+  amh: "#4caf50",
+};
+
 export function hormoneStatus(hormone: HormoneKey, value: number): "onTrack" | "watch" {
   const ref = HORMONE_REFERENCE[hormone];
   return value >= ref.low && value <= ref.high ? "onTrack" : "watch";
