@@ -86,7 +86,7 @@ export function PortalRoom({ portal }: { portal: Portal }) {
         <h1 className="mt-2 font-display text-3xl" style={{ color: meta.accent }}>
           {label.title}
         </h1>
-        <p className="mt-1 text-white/70">{label.desc}</p>
+        <p className="mt-1 text-plum-700/80">{label.desc}</p>
       </div>
 
       {/* Compose */}

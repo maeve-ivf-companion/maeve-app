@@ -21,3 +21,15 @@ export const EVENT_TYPE_ACCENT: Record<EventType, string> = {
   transfer: "#4caf50",
   other: "#9090aa",
 };
+
+// Small glyphs so the treatment calendar reads at a glance instead of only
+// via color-coded dots.
+export const EVENT_TYPE_ICON: Record<EventType, string> = {
+  injection: "💉",
+  appointment: "🩺",
+  trigger: "⚡",
+  bloodwork: "🩸",
+  retrieval: "🥚",
+  transfer: "🌱",
+  other: "•",
+};

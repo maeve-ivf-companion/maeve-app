@@ -5,9 +5,10 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useLanguage } from "@/lib/i18n/provider";
 import { PageHeader } from "@/components/app/PageHeader";
-import { Button, Card, Input, Select, Spinner } from "@/components/ui";
-import { EVENT_TYPE_ACCENT } from "@/lib/eventTypes";
-import { HORMONE_FACTS, HORMONE_KEYS, type HormoneKey } from "@/lib/hormones";
+import { Button, Card, Input, Modal, Select, Spinner } from "@/components/ui";
+import { EVENT_TYPE_ACCENT, EVENT_TYPE_ICON } from "@/lib/eventTypes";
+import { HORMONE_FACTS, HORMONE_KEYS, HORMONE_REFERENCE, type HormoneKey } from "@/lib/hormones";
+import { HormoneTrendChart } from "@/components/app/HormoneTrendChart";
 import type { HormoneLog, ScheduleEvent } from "@/lib/supabase/types";
 
 const DEFAULT_UNITS: Record<HormoneKey, string> = {
@@ -27,6 +28,7 @@ export function Monitoring() {
   const [recent, setRecent] = useState<HormoneLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [flipped, setFlipped] = useState<Set<HormoneKey>>(new Set());
+  const [selectedDay, setSelectedDay] = useState<{ day: number; events: ScheduleEvent[] } | null>(null);
 
   // Track-a-hormone (moved here from Home)
   const [hormone, setHormone] = useState<HormoneKey>("estradiol");
@@ -174,8 +176,6 @@ export function Monitoring() {
     };
   }, [events]);
 
-  const maxVal = Math.max(1, ...logs.map((l) => l.value));
-
   return (
     <div>
       <PageHeader title={t.monitoring.title} subtitle={t.monitoring.subtitle} />
@@ -195,20 +195,12 @@ export function Monitoring() {
         ) : logs.length === 0 ? (
           <p className="text-sm text-faint">{t.track.empty}</p>
         ) : (
-          <div className="flex h-32 items-end gap-2">
-            {logs.map((l) => (
-              <div key={l.id} className="flex flex-1 flex-col items-center gap-1">
-                <div
-                  className="w-full rounded-t-md bg-brand-gradient"
-                  style={{ height: `${Math.max(6, (l.value / maxVal) * 100)}%` }}
-                  title={`${l.value} ${l.unit}`}
-                />
-                <span className="text-[10px] text-faint">
-                  {new Date(l.measured_on).toLocaleDateString(lang, { day: "numeric" })}
-                </span>
-              </div>
-            ))}
-          </div>
+          <HormoneTrendChart
+            logs={logs}
+            low={HORMONE_REFERENCE.estradiol.low}
+            high={HORMONE_REFERENCE.estradiol.high}
+            unit={logs[0]?.unit || HORMONE_REFERENCE.estradiol.unit}
+          />
         )}
         <p className="text-xs text-faint">{t.monitoring.addReadingHint}</p>
       </Card>
@@ -228,24 +220,35 @@ export function Monitoring() {
             <div key={`blank-${i}`} />
           ))}
           {calendarDays.cells.map(({ day, isPast, events: dayEvents }) => (
-            <div
+            <button
               key={day}
-              className="flex min-h-[44px] flex-col items-center gap-1 rounded-lg border border-line/60 py-1"
+              onClick={() => dayEvents.length > 0 && setSelectedDay({ day, events: dayEvents })}
+              disabled={dayEvents.length === 0}
+              className={`flex min-h-[44px] flex-col items-center gap-1 rounded-lg border py-1 transition ${
+                dayEvents.length > 0
+                  ? "border-line/60 hover:border-berry-400 hover:bg-white/5"
+                  : "border-line/60"
+              }`}
             >
               <span className="text-xs text-muted">{day}</span>
               <div className="flex flex-wrap justify-center gap-0.5">
                 {dayEvents.slice(0, 3).map((e) => (
                   <span
                     key={e.id}
-                    className="h-2 w-2 rounded-full"
+                    className="flex h-4 w-4 items-center justify-center rounded-full text-[9px] leading-none"
                     style={{
-                      backgroundColor: EVENT_TYPE_ACCENT[e.type],
-                      opacity: isPast ? 1 : 0.55,
+                      backgroundColor: `${EVENT_TYPE_ACCENT[e.type]}33`,
+                      opacity: isPast ? 1 : 0.6,
                     }}
-                  />
+                  >
+                    {EVENT_TYPE_ICON[e.type]}
+                  </span>
                 ))}
+                {dayEvents.length > 3 && (
+                  <span className="text-[9px] text-faint">+{dayEvents.length - 3}</span>
+                )}
               </div>
-            </div>
+            </button>
           ))}
         </div>
         <div className="mt-3 flex items-center gap-4 text-xs text-muted">
@@ -259,6 +262,39 @@ export function Monitoring() {
           </span>
         </div>
       </Card>
+
+      <Modal
+        open={selectedDay !== null}
+        onClose={() => setSelectedDay(null)}
+        title={selectedDay ? `${t.monitoring.calendarTitle} · ${selectedDay.day}` : ""}
+      >
+        {selectedDay?.events.length === 0 ? (
+          <p className="text-sm text-faint">{t.monitoring.calendarDayEmpty}</p>
+        ) : (
+          <div className="space-y-2">
+            {selectedDay?.events.map((e) => (
+              <div key={e.id} className="flex items-center gap-3 rounded-xl border border-line p-3">
+                <span
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg"
+                  style={{ backgroundColor: `${EVENT_TYPE_ACCENT[e.type]}33` }}
+                >
+                  {EVENT_TYPE_ICON[e.type]}
+                </span>
+                <div className="min-w-0">
+                  <p className="truncate font-medium text-white">{e.title}</p>
+                  <p className="text-xs text-faint">
+                    {t.schedule.types[e.type]} ·{" "}
+                    {new Date(e.scheduled_at).toLocaleTimeString(lang, {
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Modal>
 
       {/* Track a hormone (moved here from Home) + scan-a-reading */}
       <h2 className="mb-3 mt-8 font-display text-lg text-white">{t.dashboard.trackWidget}</h2>

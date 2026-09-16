@@ -490,6 +490,16 @@ function MoodHistory({ patientId }: { patientId: string }) {
   const hardCount = checkins.filter((c) => c.mood === 3).length;
   const hasPattern = checkins.length >= 4 && hardCount / checkins.length > 0.3;
 
+  // A happy-face scale reads at a glance far better than plain color bars:
+  // the face itself says "good/neutral/hard", and its height on the scale
+  // reinforces it, instead of relying on someone parsing a bar's color.
+  const MOOD_FACE: Record<number, string> = { 1: "😊", 2: "😐", 3: "😔" };
+  const MOOD_COLOR: Record<number, string> = {
+    1: "bg-grow-500",
+    2: "bg-berry-300",
+    3: "bg-berry-500",
+  };
+
   return (
     <Card className="space-y-3">
       <div>
@@ -501,17 +511,17 @@ function MoodHistory({ patientId }: { patientId: string }) {
       ) : checkins.length === 0 ? (
         <p className="text-sm text-faint">{t.partner.moodHistoryEmpty}</p>
       ) : (
-        <div className="flex h-16 items-end gap-1">
+        <div className="flex h-24 items-end gap-1.5 overflow-x-auto pb-1">
           {checkins.map((c) => (
             <div
               key={c.id}
               title={new Date(c.created_at).toLocaleDateString(lang)}
-              className="flex-1 rounded-t-sm"
-              style={{
-                height: `${c.mood === 1 ? 100 : c.mood === 2 ? 60 : 30}%`,
-                backgroundColor: c.mood === 1 ? "#4caf50" : c.mood === 2 ? "#e8923a" : "#c2185b",
-              }}
-            />
+              className="flex shrink-0 flex-col items-center gap-1"
+              style={{ marginBottom: `${(3 - c.mood) * 16}px` }}
+            >
+              <span className="text-xl leading-none">{MOOD_FACE[c.mood]}</span>
+              <span className={`h-1.5 w-1.5 rounded-full ${MOOD_COLOR[c.mood]}`} />
+            </div>
           ))}
         </div>
       )}

@@ -10,6 +10,7 @@ import {
   Card,
   Input,
   Label,
+  Modal,
   Select,
   Spinner,
   Textarea,
@@ -49,6 +50,42 @@ export function TrackIt() {
   const [saving, setSaving] = useState(false);
   const [interpreting, setInterpreting] = useState(false);
   const [interpretation, setInterpretation] = useState<string | null>(null);
+
+  // Editing a previous entry
+  const [editing, setEditing] = useState<HormoneLog | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const [editUnit, setEditUnit] = useState("");
+  const [editDate, setEditDate] = useState("");
+  const [editSaving, setEditSaving] = useState(false);
+  const [editDeleting, setEditDeleting] = useState(false);
+
+  function openEdit(log: HormoneLog) {
+    setEditing(log);
+    setEditValue(String(log.value));
+    setEditUnit(log.unit);
+    setEditDate(log.measured_on);
+  }
+
+  async function saveEdit() {
+    if (!editing || !editValue) return;
+    setEditSaving(true);
+    await supabase
+      .from("hormone_logs")
+      .update({ value: Number(editValue), unit: editUnit, measured_on: editDate })
+      .eq("id", editing.id);
+    setEditSaving(false);
+    setEditing(null);
+    await load();
+  }
+
+  async function deleteEdit() {
+    if (!editing) return;
+    setEditDeleting(true);
+    await supabase.from("hormone_logs").delete().eq("id", editing.id);
+    setEditDeleting(false);
+    setEditing(null);
+    await load();
+  }
 
   useEffect(() => {
     void load();
@@ -212,28 +249,72 @@ export function TrackIt() {
       ) : (
         <div className="space-y-2">
           {logs.map((log) => (
-            <Card key={log.id} className="flex items-baseline justify-between p-4">
-              <div>
-                <span className="font-semibold text-white">
-                  {t.track.hormones[
-                    log.hormone as keyof typeof t.track.hormones
-                  ] ?? log.hormone}
+            <button key={log.id} onClick={() => openEdit(log)} className="block w-full text-left">
+              <Card className="flex items-baseline justify-between p-4 transition hover:border-berry-400">
+                <div>
+                  <span className="font-semibold text-white">
+                    {t.track.hormones[
+                      log.hormone as keyof typeof t.track.hormones
+                    ] ?? log.hormone}
+                  </span>
+                  <span className="ml-2 text-faint">
+                    {new Date(log.measured_on).toLocaleDateString(lang, {
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </span>
+                </div>
+                <span className="font-display text-xl text-berry-400">
+                  {log.value}
+                  <span className="ml-1 text-xs text-faint">{log.unit}</span>
                 </span>
-                <span className="ml-2 text-faint">
-                  {new Date(log.measured_on).toLocaleDateString(lang, {
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </span>
-              </div>
-              <span className="font-display text-xl text-berry-600">
-                {log.value}
-                <span className="ml-1 text-xs text-faint">{log.unit}</span>
-              </span>
-            </Card>
+              </Card>
+            </button>
           ))}
         </div>
       )}
+
+      <Modal open={editing !== null} onClose={() => setEditing(null)} title={t.common.edit}>
+        {editing && (
+          <div className="space-y-4">
+            <p className="text-sm text-muted">
+              {t.track.hormones[editing.hormone as keyof typeof t.track.hormones] ?? editing.hormone}
+            </p>
+            <div>
+              <Label>{t.track.date}</Label>
+              <Input type="date" value={editDate} onChange={(e) => setEditDate(e.target.value)} />
+            </div>
+            <div>
+              <Label>{t.track.value}</Label>
+              <Input
+                type="number"
+                inputMode="decimal"
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>{t.track.unit}</Label>
+              <Input value={editUnit} onChange={(e) => setEditUnit(e.target.value)} />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={deleteEdit}
+                disabled={editDeleting || editSaving}
+              >
+                {editDeleting && <Spinner />}
+                {t.common.delete}
+              </Button>
+              <Button className="flex-1" onClick={saveEdit} disabled={editSaving || editDeleting || !editValue}>
+                {editSaving && <Spinner />}
+                {t.common.save}
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

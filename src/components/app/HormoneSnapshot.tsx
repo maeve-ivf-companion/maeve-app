@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useLanguage } from "@/lib/i18n/provider";
+import { fmt } from "@/lib/i18n/format";
 import { Card, Spinner } from "@/components/ui";
 import { HORMONE_REFERENCE, hormoneStatus, type HormoneKey } from "@/lib/hormones";
 import type { HormoneLog } from "@/lib/supabase/types";
@@ -35,6 +36,20 @@ export function HormoneSnapshot() {
     ? Math.max(4, Math.min(100, Math.round((latest.value / ref.high) * 100)))
     : 0;
   const status = latest ? hormoneStatus("estradiol" as HormoneKey, latest.value) : null;
+  const unit = latest?.unit || ref.unit;
+  const goalMessage = latest
+    ? latest.value < ref.low
+      ? fmt(t.dashboard.hormoneSnapshotBelow, {
+          n: Math.round(ref.low - latest.value),
+          unit,
+        })
+      : latest.value > ref.high
+        ? fmt(t.dashboard.hormoneSnapshotAbove, {
+            n: Math.round(latest.value - ref.high),
+            unit,
+          })
+        : t.dashboard.hormoneSnapshotOnTarget
+    : "";
 
   return (
     <Link href="/app/monitoring">
@@ -52,29 +67,34 @@ export function HormoneSnapshot() {
         ) : !latest ? (
           <p className="mt-2 text-sm text-faint">{t.dashboard.hormoneSnapshotEmpty}</p>
         ) : (
-          <div className="mt-3 flex items-center gap-4">
-            <div className="flex-1">
-              <p className="text-sm text-muted">
-                {t.track.hormones.estradiol} · {latest.value} {latest.unit || ref.unit}
-              </p>
-              <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-plum-50">
-                <div
-                  className="h-full rounded-full bg-brand-gradient"
-                  style={{ width: `${pct}%` }}
-                />
+          <div className="mt-3">
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <p className="text-sm text-muted">
+                  {t.track.hormones.estradiol} · {latest.value} {unit}
+                </p>
+                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/10">
+                  <div
+                    className={`h-full rounded-full transition-all ${
+                      status === "onTrack" ? "bg-grow-500" : "bg-berry-400"
+                    }`}
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
               </div>
+              <span
+                className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                  status === "onTrack"
+                    ? "bg-grow-300/30 text-grow-500"
+                    : "bg-blush-100 text-berry-600"
+                }`}
+              >
+                {status === "onTrack"
+                  ? t.dashboard.hormoneSnapshotOnTrack
+                  : t.dashboard.hormoneSnapshotWatch}
+              </span>
             </div>
-            <span
-              className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                status === "onTrack"
-                  ? "bg-grow-300/30 text-grow-500"
-                  : "bg-blush-100 text-berry-600"
-              }`}
-            >
-              {status === "onTrack"
-                ? t.dashboard.hormoneSnapshotOnTrack
-                : t.dashboard.hormoneSnapshotWatch}
-            </span>
+            <p className="mt-2 text-xs text-faint">{goalMessage}</p>
           </div>
         )}
       </Card>
