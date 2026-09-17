@@ -459,6 +459,8 @@ export const en = {
     calendarPastTaken: "Previous, taken",
     calendarFuture: "Upcoming",
     calendarDayEmpty: "Nothing scheduled this day.",
+    addTreatment: "Add a treatment",
+    allHormones: "All hormones",
     flashcardsTitle: "What your hormones mean",
     flashcardsHint: "General information, not tailored to you. Tap a card to flip it.",
     flashcardsFactNote: "Statements of fact, not a recommendation.",

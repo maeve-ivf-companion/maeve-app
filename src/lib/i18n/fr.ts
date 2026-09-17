@@ -464,6 +464,8 @@ export const fr: Dictionary = {
     calendarPastTaken: "Précédent, pris",
     calendarFuture: "À venir",
     calendarDayEmpty: "Rien de prévu ce jour-là.",
+    addTreatment: "Ajouter un traitement",
+    allHormones: "Toutes les hormones",
     flashcardsTitle: "Ce que signifient vos hormones",
     flashcardsHint: "Information générale, non personnalisée. Touchez une carte pour la retourner.",
     flashcardsFactNote: "Des énoncés de faits, pas une recommandation.",

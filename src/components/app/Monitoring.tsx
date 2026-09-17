@@ -9,7 +9,10 @@ import { Button, Card, Input, Label, Modal, Select, Spinner } from "@/components
 import { EVENT_TYPES, EVENT_TYPE_ACCENT, EVENT_TYPE_ICON } from "@/lib/eventTypes";
 import { HORMONE_COLOR, HORMONE_FACTS, HORMONE_KEYS, HORMONE_REFERENCE, type HormoneKey } from "@/lib/hormones";
 import { HormoneTrendChart } from "@/components/app/HormoneTrendChart";
+import { HormoneMultiTrendChart } from "@/components/app/HormoneMultiTrendChart";
 import type { EventType, HormoneLog, ScheduleEvent } from "@/lib/supabase/types";
+
+const FLIP_REVERT_MS = 10000;
 
 const DEFAULT_UNITS: Record<HormoneKey, string> = {
   estradiol: "pg/mL",
@@ -32,8 +35,9 @@ export function Monitoring() {
 
   // Which hormone's trend the chart above shows — independent of the
   // "track a hormone" add-form below, so scanning or logging a new reading
-  // doesn't unexpectedly swap what trend you're looking at.
-  const [trendHormone, setTrendHormone] = useState<HormoneKey>("estradiol");
+  // doesn't unexpectedly swap what trend you're looking at. "all" shows
+  // every hormone on one normalized graph instead of a single line.
+  const [trendHormone, setTrendHormone] = useState<HormoneKey | "all">("estradiol");
   const [trendLoading, setTrendLoading] = useState(true);
 
   // Track-a-hormone (moved here from Home)
@@ -54,6 +58,24 @@ export function Monitoring() {
   const [editWhen, setEditWhen] = useState("");
   const [editSaving, setEditSaving] = useState(false);
   const [editDeleting, setEditDeleting] = useState(false);
+
+  // Adding a brand-new treatment to a specific calendar day (opened from
+  // that day's event list)
+  const [newForDay, setNewForDay] = useState<number | null>(null);
+  const [newTitle, setNewTitle] = useState("");
+  const [newType, setNewType] = useState<EventType>("injection");
+  const [newTime, setNewTime] = useState("20:00");
+  const [newSaving, setNewSaving] = useState(false);
+
+  // Flashcard flip-back timers, one per hormone key, so each card reverts
+  // independently ~10s after it was flipped rather than all at once.
+  const flipTimers = useRef<Map<HormoneKey, ReturnType<typeof setTimeout>>>(new Map());
+  useEffect(() => {
+    const timers = flipTimers.current;
+    return () => {
+      timers.forEach((t) => clearTimeout(t));
+    };
+  }, []);
 
   async function loadAll() {
     const monthStart = new Date();
@@ -79,14 +101,14 @@ export function Monitoring() {
     setLoading(false);
   }
 
-  async function loadTrend(h: HormoneKey) {
+  async function loadTrend(h: HormoneKey | "all") {
     setTrendLoading(true);
-    const { data } = await supabase
+    let query = supabase
       .from("hormone_logs")
       .select("*")
-      .eq("hormone", h)
-      .order("measured_on", { ascending: true })
-      .limit(12);
+      .order("measured_on", { ascending: true });
+    if (h !== "all") query = query.eq("hormone", h);
+    const { data } = await query.limit(h === "all" ? 200 : 12);
     setLogs((data as HormoneLog[]) ?? []);
     setTrendLoading(false);
   }
@@ -100,6 +122,17 @@ export function Monitoring() {
     void loadTrend(trendHormone);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trendHormone]);
+
+  const logsByHormone = useMemo(() => {
+    if (trendHormone !== "all") return null;
+    const map = {} as Record<HormoneKey, HormoneLog[]>;
+    for (const h of HORMONE_KEYS) map[h] = [];
+    for (const l of logs) {
+      const key = l.hormone as HormoneKey;
+      if (map[key]) map[key].push(l);
+    }
+    return map;
+  }, [trendHormone, logs]);
 
   function toLocalInput(iso: string) {
     const d = new Date(iso);
@@ -140,11 +173,67 @@ export function Monitoring() {
     await loadAll();
   }
 
+  function openNewForDay(day: number) {
+    setNewForDay(day);
+    setNewTitle("");
+    setNewType("injection");
+    setNewTime("20:00");
+    setSelectedDay(null);
+  }
+
+  async function saveNewEvent() {
+    if (newForDay === null || !newTitle.trim()) return;
+    setNewSaving(true);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      const monthStart = new Date();
+      monthStart.setDate(1);
+      const [h, m] = newTime.split(":").map((n) => parseInt(n, 10) || 0);
+      const scheduledAt = new Date(
+        monthStart.getFullYear(),
+        monthStart.getMonth(),
+        newForDay,
+        h,
+        m
+      );
+      await supabase.from("schedule_events").insert({
+        user_id: user.id,
+        title: newTitle.trim(),
+        type: newType,
+        scheduled_at: scheduledAt.toISOString(),
+      });
+      await loadAll();
+    }
+    setNewSaving(false);
+    setNewForDay(null);
+  }
+
   function toggleFlip(key: HormoneKey) {
+    const existingTimer = flipTimers.current.get(key);
     setFlipped((prev) => {
       const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
+      if (next.has(key)) {
+        // Flipping back early — cancel the pending auto-revert.
+        next.delete(key);
+        if (existingTimer) {
+          clearTimeout(existingTimer);
+          flipTimers.current.delete(key);
+        }
+      } else {
+        next.add(key);
+        if (existingTimer) clearTimeout(existingTimer);
+        const timer = setTimeout(() => {
+          setFlipped((p) => {
+            const n = new Set(p);
+            n.delete(key);
+            return n;
+          });
+          flipTimers.current.delete(key);
+        }, FLIP_REVERT_MS);
+        flipTimers.current.set(key, timer);
+      }
       return next;
     });
   }
@@ -252,8 +341,9 @@ export function Monitoring() {
         </div>
         <Select
           value={trendHormone}
-          onChange={(e) => setTrendHormone(e.target.value as HormoneKey)}
+          onChange={(e) => setTrendHormone(e.target.value as HormoneKey | "all")}
         >
+          <option value="all">{t.monitoring.allHormones}</option>
           {HORMONE_KEYS.map((h) => (
             <option key={h} value={h}>
               {t.track.hormones[h]}
@@ -266,6 +356,8 @@ export function Monitoring() {
           </div>
         ) : logs.length === 0 ? (
           <p className="text-sm text-faint">{t.track.empty}</p>
+        ) : trendHormone === "all" ? (
+          <HormoneMultiTrendChart logsByHormone={logsByHormone!} />
         ) : (
           <HormoneTrendChart
             key={trendHormone}
@@ -373,6 +465,48 @@ export function Monitoring() {
             ))}
           </div>
         )}
+        <Button
+          variant="outline"
+          className="mt-4 w-full"
+          onClick={() => selectedDay && openNewForDay(selectedDay.day)}
+        >
+          + {t.monitoring.addTreatment}
+        </Button>
+      </Modal>
+
+      <Modal
+        open={newForDay !== null}
+        onClose={() => setNewForDay(null)}
+        title={t.monitoring.addTreatment}
+      >
+        <div className="space-y-4">
+          <div>
+            <Label>{t.schedule.eventTitle}</Label>
+            <Input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} autoFocus />
+          </div>
+          <div>
+            <Label>{t.schedule.type}</Label>
+            <Select value={newType} onChange={(e) => setNewType(e.target.value as EventType)}>
+              {EVENT_TYPES.map((ty) => (
+                <option key={ty} value={ty}>
+                  {t.schedule.types[ty]}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div>
+            <Label>{t.schedule.when}</Label>
+            <Input type="time" value={newTime} onChange={(e) => setNewTime(e.target.value)} />
+          </div>
+          <Button
+            className="w-full"
+            onClick={saveNewEvent}
+            disabled={newSaving || !newTitle.trim()}
+          >
+            {newSaving && <Spinner />}
+            {t.common.save}
+          </Button>
+        </div>
       </Modal>
 
       <Modal
