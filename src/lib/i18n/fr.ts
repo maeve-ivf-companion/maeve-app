@@ -186,7 +186,7 @@ export const fr: Dictionary = {
     medicationsEmpty: "Aucun médicament ajouté encore.",
     happyTitle: "Qu'est-ce qui vous rend heureuse ?",
     happyHint:
-      "Choisissez celle qui vous convient le mieux aujourd'hui. Cela aide votre partenaire à savoir comment vous soutenir.",
+      "Choisissez-en autant que vous voulez. Cela aide votre partenaire à savoir comment vous soutenir, pas seulement aujourd'hui.",
     happyOptions: {
       quiet: "Un moment de calme seule",
       partnerTime: "Du temps avec mon ou ma partenaire",
@@ -415,6 +415,9 @@ export const fr: Dictionary = {
     startedOn: "débuté le {date}",
     noCycle:
       "Ajoutez la date de début de votre cycle dans Compte pour voir votre chronologie.",
+    editCalendar: "Modifier le calendrier",
+    addDate: "Ajouter une date",
+    rangeOngoing: "en cours",
     stages: {
       consultation: "Consultation",
       cycleStart: "Début du cycle",

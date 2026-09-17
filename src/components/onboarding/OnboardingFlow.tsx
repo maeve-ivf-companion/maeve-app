@@ -51,7 +51,7 @@ export function OnboardingFlow() {
   const [cycleNumber, setCycleNumber] = useState(1);
   const [postalCode, setPostalCode] = useState("");
   const [durationWeeks, setDurationWeeks] = useState("");
-  const [happyThing, setHappyThing] = useState<string | null>(null);
+  const [happyThings, setHappyThings] = useState<string[]>([]);
   const [meds, setMeds] = useState<DraftMed[]>(PRESET_MEDS);
   const [cycleStartDate, setCycleStartDate] = useState(
     () => new Date().toISOString().slice(0, 10)
@@ -100,6 +100,12 @@ export function OnboardingFlow() {
     setStep("protocol");
   }
 
+  function toggleHappyThing(key: string) {
+    setHappyThings((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    );
+  }
+
   async function finishPatient() {
     setError(null);
     setLoading(true);
@@ -121,7 +127,7 @@ export function OnboardingFlow() {
           cycle_number: cycleNumber,
           procedure_duration_weeks: durationWeeks ? Number(durationWeeks) : null,
           notif_opt_in: notifOptIn,
-          happy_thing: happyThing,
+          happy_things: happyThings,
         })
         .eq("id", userId);
       await supabase.from("consents").insert([
@@ -290,7 +296,7 @@ export function OnboardingFlow() {
                 onChange={(e) => setAgreed(e.target.checked)}
                 className="mt-1 h-5 w-5 accent-berry-500"
               />
-              <span className="text-sm text-white">
+              <span className="text-sm text-plum-700">
                 {t.onboarding.consentAgree}
               </span>
             </label>
@@ -432,19 +438,31 @@ export function OnboardingFlow() {
               <Label>{t.onboarding.happyTitle}</Label>
               <p className="mb-3 text-sm text-muted">{t.onboarding.happyHint}</p>
               <div className="grid grid-cols-2 gap-2">
-                {HAPPY_KEYS.map((key) => (
-                  <button
-                    key={key}
-                    onClick={() => setHappyThing(key)}
-                    className={`rounded-xl border px-3 py-2 text-left text-sm transition ${
-                      happyThing === key
-                        ? "border-berry-400 bg-blush-100 text-berry-600"
-                        : "border-line text-white hover:border-berry-300"
-                    }`}
-                  >
-                    {t.onboarding.happyOptions[key]}
-                  </button>
-                ))}
+                {HAPPY_KEYS.map((key) => {
+                  const selected = happyThings.includes(key);
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => toggleHappyThing(key)}
+                      aria-pressed={selected}
+                      className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm transition ${
+                        selected
+                          ? "border-berry-400 bg-blush-100 text-berry-600"
+                          : "border-line text-white hover:border-berry-300"
+                      }`}
+                    >
+                      <span
+                        className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border ${
+                          selected ? "border-berry-500 bg-berry-500 text-white" : "border-line"
+                        }`}
+                      >
+                        {selected && "✓"}
+                      </span>
+                      {t.onboarding.happyOptions[key]}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

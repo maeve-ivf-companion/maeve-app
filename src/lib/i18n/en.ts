@@ -184,7 +184,7 @@ export const en = {
     medicationsEmpty: "No medications added yet.",
     happyTitle: "What makes you happy?",
     happyHint:
-      "Pick the one that fits best today. This helps your partner know how to support you.",
+      "Pick as many as fit. This helps your partner know how to support you, not just today.",
     happyOptions: {
       quiet: "Quiet time alone",
       partnerTime: "Time with my partner",
@@ -412,6 +412,9 @@ export const en = {
     cycleLabel: "Cycle {n}",
     startedOn: "started {date}",
     noCycle: "Add your cycle start date in Account to see your timeline.",
+    editCalendar: "Edit calendar",
+    addDate: "Add a date",
+    rangeOngoing: "ongoing",
     stages: {
       consultation: "Consultation",
       cycleStart: "Cycle Start",

@@ -66,7 +66,8 @@ export type Profile = {
   cycle_number: number | null;
   procedure_duration_weeks: number | null;
   notif_opt_in: boolean;
-  happy_thing: string | null;
+  happy_things: string[];
+  consultation_date: string | null;
   connection_mode: ConnectionMode;
   shared_items: SharedItemKey[];
 };
