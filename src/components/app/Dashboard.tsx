@@ -13,7 +13,7 @@ import { QuickMoodCheck } from "@/components/app/QuickMoodCheck";
 import { TodaysChecklist } from "@/components/app/TodaysChecklist";
 import { CupQuestion } from "@/components/app/CupQuestion";
 import { CommunityTeaser } from "@/components/app/CommunityTeaser";
-import { deriveStages } from "@/components/app/Journey";
+import { deriveStages } from "@/lib/stages";
 import type { Profile, ScheduleEvent } from "@/lib/supabase/types";
 
 function greeting(t: ReturnType<typeof useLanguage>["t"]) {

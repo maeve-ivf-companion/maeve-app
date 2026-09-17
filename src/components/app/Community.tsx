@@ -7,7 +7,7 @@ import { useLanguage } from "@/lib/i18n/provider";
 import { PageHeader } from "@/components/app/PageHeader";
 import { Button, Card, Spinner, Textarea } from "@/components/ui";
 import { COMMUNITY_TOPICS, topicForStage } from "@/lib/community";
-import { deriveStages } from "@/components/app/Journey";
+import { deriveStages } from "@/lib/stages";
 import { Chat } from "@/components/app/Chat";
 import type {
   CommunityPost,

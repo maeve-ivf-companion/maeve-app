@@ -1,5 +1,5 @@
 import type { CommunityTopic } from "@/lib/supabase/types";
-import type { StageKey } from "@/components/app/Journey";
+import type { StageKey } from "@/lib/stages";
 import type { Dictionary } from "@/lib/i18n/en";
 
 // Fixed topic set enforced by the DB check constraint in

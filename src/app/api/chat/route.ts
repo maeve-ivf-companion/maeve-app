@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { askClaude, isAnthropicConfigured, SAFETY } from "@/lib/anthropic";
-import { deriveStages } from "@/components/app/Journey";
+import { deriveStages } from "@/lib/stages";
 import type { ChatMessage, Profile, ScheduleEvent } from "@/lib/supabase/types";
 
 // Ask Maeve chat box (PDF page 6): a persistent conversation, distinct from
