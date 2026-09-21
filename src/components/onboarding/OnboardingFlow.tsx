@@ -13,16 +13,43 @@ import type { ProcedureType } from "@/lib/supabase/types";
 type Role = "patient" | "partner";
 type Step = "role" | "details" | "consent" | "intake" | "protocol" | "pair";
 
-type DraftMed = { name: string; hormone: string; time: string; checked: boolean };
+type DraftMed = {
+  name: string;
+  /** Generic name first, brands after, so it's recognizable either way. */
+  label: string;
+  hormone: string;
+  time: string;
+  /** "" means "use the default for this medication" (see effectiveStart). */
+  startDate: string;
+  /** One-off dose such as a trigger shot, not a daily course. */
+  single?: boolean;
+  checked: boolean;
+};
 
 const PRESET_MEDS: DraftMed[] = [
-  { name: "Gonal-F", hormone: "fsh", time: "20:00", checked: false },
-  { name: "Menopur", hormone: "fsh", time: "20:00", checked: false },
-  { name: "Cetrotide", hormone: "lh", time: "08:00", checked: false },
-  { name: "Ovidrel (trigger)", hormone: "hcg", time: "21:00", checked: false },
-  { name: "Progesterone support", hormone: "progesterone", time: "21:00", checked: false },
-  { name: "Estrogen support", hormone: "estradiol", time: "08:00", checked: false },
+  { name: "Gonal-F", label: "Follitropin alfa (Gonal-F)", hormone: "fsh", time: "20:00", startDate: "", checked: false },
+  { name: "Menopur", label: "Menotropins (Menopur)", hormone: "fsh", time: "20:00", startDate: "", checked: false },
+  { name: "Cetrotide", label: "Cetrorelix (Cetrotide)", hormone: "lh", time: "08:00", startDate: "", checked: false },
+  { name: "Ovidrel (trigger)", label: "Choriogonadotropin alfa (Ovidrel), trigger", hormone: "hcg", time: "21:00", startDate: "", single: true, checked: false },
+  { name: "HCG (trigger)", label: "HCG (Pregnyl, Novarel), trigger", hormone: "hcg", time: "21:00", startDate: "", single: true, checked: false },
+  { name: "Progesterone support", label: "Progesterone (Prometrium, Crinone)", hormone: "progesterone", time: "21:00", startDate: "", checked: false },
+  { name: "Estrogen support", label: "Estradiol (Estrace, Estradot)", hormone: "estradiol", time: "08:00", startDate: "", checked: false },
 ];
+
+// Parse "YYYY-MM-DD" as a local date. new Date("2026-09-17") is UTC midnight,
+// which lands on the previous day in any timezone behind UTC.
+function localDate(dateOnly: string): Date {
+  const [y, m, d] = dateOnly.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+function toDateOnly(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+function toLocalInput(iso: string): string {
+  const d = new Date(iso);
+  return `${toDateOnly(d)}T${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
 
 const HAPPY_KEYS = [
   "quiet", "partnerTime", "outdoors", "journaling", "music",
@@ -54,7 +81,7 @@ export function OnboardingFlow() {
   const [happyThings, setHappyThings] = useState<string[]>([]);
   const [meds, setMeds] = useState<DraftMed[]>(PRESET_MEDS);
   const [cycleStartDate, setCycleStartDate] = useState(
-    () => new Date().toISOString().slice(0, 10)
+    () => toDateOnly(new Date())
   );
   const [draftEvents, setDraftEvents] = useState<DraftEvent[]>([]);
 
@@ -89,12 +116,24 @@ export function OnboardingFlow() {
     setStep("intake");
   }
 
+  function effectiveStart(med: DraftMed): string {
+    if (med.startDate) return med.startDate;
+    const start = localDate(cycleStartDate);
+    if (med.single) start.setDate(start.getDate() + 10);
+    return toDateOnly(start);
+  }
+
   function goToProtocol() {
     const checkedMeds = meds.filter((m) => m.checked);
     setDraftEvents(
       buildStandardProtocol(
-        new Date(cycleStartDate),
-        checkedMeds.map((m) => ({ name: m.name, times: [m.time] }))
+        localDate(cycleStartDate),
+        checkedMeds.map((m) => ({
+          name: m.name,
+          times: [m.time],
+          startDate: effectiveStart(m),
+          single: m.single,
+        }))
       )
     );
     setStep("protocol");
@@ -404,30 +443,48 @@ export function OnboardingFlow() {
                 {meds.map((med, i) => (
                   <div
                     key={med.name}
-                    className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-cream/40 p-3"
+                    className="space-y-3 rounded-xl border border-line bg-cream/40 p-3"
                   >
-                    <input
-                      type="checkbox"
-                      checked={med.checked}
-                      onChange={(e) => {
-                        const next = [...meds];
-                        next[i] = { ...med, checked: e.target.checked };
-                        setMeds(next);
-                      }}
-                      className="h-5 w-5 accent-berry-500"
-                    />
-                    <span className="flex-1 font-medium text-white">{med.name}</span>
-                    {med.checked && (
-                      <Input
-                        type="time"
-                        value={med.time}
+                    <label className="flex cursor-pointer items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={med.checked}
                         onChange={(e) => {
                           const next = [...meds];
-                          next[i] = { ...med, time: e.target.value };
+                          next[i] = { ...med, checked: e.target.checked };
                           setMeds(next);
                         }}
-                        className="w-32"
+                        className="h-5 w-5 accent-berry-500"
                       />
+                      <span className="flex-1 font-medium text-white">{med.label}</span>
+                    </label>
+                    {med.checked && (
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label>{t.onboarding.medicationStartLabel}</Label>
+                          <Input
+                            type="date"
+                            value={effectiveStart(med)}
+                            onChange={(e) => {
+                              const next = [...meds];
+                              next[i] = { ...med, startDate: e.target.value };
+                              setMeds(next);
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <Label>{t.onboarding.medicationTimeLabel}</Label>
+                          <Input
+                            type="time"
+                            value={med.time}
+                            onChange={(e) => {
+                              const next = [...meds];
+                              next[i] = { ...med, time: e.target.value };
+                              setMeds(next);
+                            }}
+                          />
+                        </div>
+                      </div>
                     )}
                   </div>
                 ))}
@@ -501,21 +558,43 @@ export function OnboardingFlow() {
               <h2 className="font-display text-2xl text-ink">{t.onboarding.protocolTitle}</h2>
               <p className="mt-2 text-sm text-muted">{t.onboarding.protocolBody}</p>
             </div>
-            <ul className="max-h-72 space-y-2 overflow-y-auto">
+            <ul className="max-h-96 space-y-2 overflow-y-auto">
               {draftEvents.map((e, i) => (
                 <li
                   key={i}
-                  className="flex items-center justify-between rounded-xl border border-line bg-cream/40 px-3 py-2"
+                  className="space-y-2 rounded-xl border border-line bg-cream/40 p-3"
                 >
-                  <span className="text-sm font-medium text-white">{e.title}</span>
-                  <span className="text-xs text-faint">
-                    {new Date(e.scheduled_at).toLocaleString(lang, {
-                      month: "short",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "2-digit",
-                    })}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={e.title}
+                      onChange={(ev) =>
+                        setDraftEvents((prev) =>
+                          prev.map((d, j) => (j === i ? { ...d, title: ev.target.value } : d))
+                        )
+                      }
+                      aria-label={t.schedule.eventTitle}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setDraftEvents((prev) => prev.filter((_, j) => j !== i))}
+                      aria-label={t.common.delete}
+                      className="shrink-0 rounded-lg px-2 py-1 text-faint transition hover:text-berry-400"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <Input
+                    type="datetime-local"
+                    value={toLocalInput(e.scheduled_at)}
+                    onChange={(ev) => {
+                      if (!ev.target.value) return;
+                      const iso = new Date(ev.target.value).toISOString();
+                      setDraftEvents((prev) =>
+                        prev.map((d, j) => (j === i ? { ...d, scheduled_at: iso } : d))
+                      );
+                    }}
+                    aria-label={t.schedule.when}
+                  />
                 </li>
               ))}
             </ul>

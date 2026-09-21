@@ -21,6 +21,7 @@ const DEFAULT_UNITS: Record<HormoneKey, string> = {
   progesterone: "ng/mL",
   hcg: "mIU/mL",
   amh: "ng/mL",
+  prolactin: "ng/mL",
 };
 
 export function Monitoring() {
@@ -357,7 +358,10 @@ export function Monitoring() {
         ) : logs.length === 0 ? (
           <p className="text-sm text-faint">{t.track.empty}</p>
         ) : trendHormone === "all" ? (
-          <HormoneMultiTrendChart logsByHormone={logsByHormone!} />
+          <>
+            <HormoneMultiTrendChart logsByHormone={logsByHormone!} />
+            <p className="text-xs text-faint">{t.monitoring.allHormonesHint}</p>
+          </>
         ) : (
           <HormoneTrendChart
             key={trendHormone}

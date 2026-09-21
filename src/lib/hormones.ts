@@ -11,7 +11,8 @@ export type HormoneKey =
   | "fsh"
   | "progesterone"
   | "hcg"
-  | "amh";
+  | "amh"
+  | "prolactin";
 
 export const HORMONE_KEYS: HormoneKey[] = [
   "estradiol",
@@ -20,6 +21,7 @@ export const HORMONE_KEYS: HormoneKey[] = [
   "progesterone",
   "hcg",
   "amh",
+  "prolactin",
 ];
 
 /** A typical mid-stimulation reference band, shown only as "on track" vs
@@ -34,6 +36,7 @@ export const HORMONE_REFERENCE: Record<
   progesterone: { low: 0.5, high: 1.5, unit: "ng/mL" },
   hcg: { low: 0, high: 5, unit: "mIU/mL" },
   amh: { low: 1, high: 4, unit: "ng/mL" },
+  prolactin: { low: 4, high: 25, unit: "ng/mL" },
 };
 
 // One accent color per hormone, reusing the same hue family as
@@ -46,6 +49,7 @@ export const HORMONE_COLOR: Record<HormoneKey, string> = {
   progesterone: "#7a4b9e",
   hcg: "#2f8f7a",
   amh: "#4caf50",
+  prolactin: "#3ea6c4",
 };
 
 export function hormoneStatus(hormone: HormoneKey, value: number): "onTrack" | "watch" {
@@ -83,6 +87,10 @@ export const HORMONE_FACTS: Record<HormoneKey, HormoneFacts> = {
     en: "AMH (anti-Müllerian hormone) reflects egg reserve and is usually measured once before a cycle starts rather than tracked day to day during stimulation.",
     fr: "L'AMH (hormone anti-müllérienne) reflète la réserve ovarienne et est habituellement mesurée une fois avant le début d'un cycle plutôt que suivie jour après jour pendant la stimulation.",
   },
+  prolactin: {
+    en: "Prolactin is the hormone that supports milk production. Clinics often check it at the start of fertility testing because levels that run high can interfere with ovulation. It is usually a one-time baseline check rather than something tracked daily.",
+    fr: "La prolactine est l'hormone qui soutient la production de lait. Les cliniques la vérifient souvent au début des tests de fertilité, car un taux élevé peut nuire à l'ovulation. C'est généralement une mesure de départ ponctuelle plutôt qu'un suivi quotidien.",
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -109,7 +117,14 @@ const at = (base: Date, days: number, hour: number, minute = 0) => {
 
 export function buildStandardProtocol(
   cycleStart: Date,
-  medications: { name: string; times: string[] }[]
+  medications: {
+    name: string;
+    times: string[];
+    /** Local "YYYY-MM-DD" the patient's clinic told them to start; defaults to cycle start. */
+    startDate?: string;
+    /** One-off dose (e.g. a trigger shot) rather than a daily course. */
+    single?: boolean;
+  }[]
 ): DraftEvent[] {
   const events: DraftEvent[] = [];
   const STIM_DAYS = 10;
@@ -126,15 +141,26 @@ export function buildStandardProtocol(
     });
   });
 
-  for (let day = 0; day < STIM_DAYS; day++) {
-    for (const med of medications) {
-      const times = med.times.length > 0 ? med.times : ["20:00"];
+  for (const med of medications) {
+    const times = med.times.length > 0 ? med.times : ["20:00"];
+    let base = cycleStart;
+    if (med.startDate) {
+      const [y, mo, d] = med.startDate.split("-").map(Number);
+      base = new Date(y, mo - 1, d);
+    } else if (med.single) {
+      base = new Date(cycleStart.getTime() + STIM_DAYS * DAY_MS);
+    }
+    // A daily course runs from its start through the end of stimulation
+    // (at least one day); a single dose is exactly one.
+    const offset = Math.round((base.getTime() - cycleStart.getTime()) / DAY_MS);
+    const days = med.single ? 1 : Math.max(1, STIM_DAYS - offset);
+    for (let day = 0; day < days; day++) {
       for (const time of times) {
         const [h, m] = time.split(":").map((n) => parseInt(n, 10) || 0);
         events.push({
           type: "injection",
           title: med.name,
-          scheduled_at: at(cycleStart, day, h, m),
+          scheduled_at: at(base, day, h, m),
         });
       }
     }

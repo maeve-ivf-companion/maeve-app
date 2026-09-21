@@ -24,6 +24,7 @@ const HORMONE_KEYS = [
   "progesterone",
   "hcg",
   "amh",
+  "prolactin",
 ] as const;
 
 const DEFAULT_UNITS: Record<string, string> = {
@@ -33,6 +34,7 @@ const DEFAULT_UNITS: Record<string, string> = {
   progesterone: "ng/mL",
   hcg: "mIU/mL",
   amh: "ng/mL",
+  prolactin: "ng/mL",
 };
 
 export function TrackIt() {

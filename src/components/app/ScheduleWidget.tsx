@@ -7,13 +7,9 @@ import { useLanguage } from "@/lib/i18n/provider";
 import { fmt } from "@/lib/i18n/format";
 import { Button, Card, Input, Select, Spinner } from "@/components/ui";
 import { EVENT_TYPES as TYPES, EVENT_TYPE_ACCENT as typeAccent } from "@/lib/eventTypes";
+import { MOOD_OPTIONS as PING_MOODS } from "@/lib/moods";
 import type { EventType, Mood, ScheduleEvent } from "@/lib/supabase/types";
 
-const PING_MOODS: { mood: Mood; emoji: string }[] = [
-  { mood: 1, emoji: "😊" },
-  { mood: 2, emoji: "😐" },
-  { mood: 3, emoji: "😔" },
-];
 
 export function ScheduleWidget() {
   const { t, lang } = useLanguage();

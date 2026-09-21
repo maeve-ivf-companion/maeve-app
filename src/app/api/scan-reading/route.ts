@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { askClaudeWithImage, isAnthropicConfigured, SAFETY } from "@/lib/anthropic";
 
-const HORMONE_KEYS = ["estradiol", "lh", "fsh", "progesterone", "hcg", "amh"] as const;
+const HORMONE_KEYS = ["estradiol", "lh", "fsh", "progesterone", "hcg", "amh", "prolactin"] as const;
 
 // Reads a photo of a lab report (Monitoring page's "scan a reading" camera
 // option) and extracts a hormone name + value for the user to review before

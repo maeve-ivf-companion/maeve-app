@@ -28,7 +28,7 @@ export type CommunityTopic =
   | "success_stories"
   | "loss_recovery"
   | "questions";
-export type Mood = 1 | 2 | 3; // 1 good, 2 neutral, 3 hard
+export type Mood = 1 | 2 | 3 | 4 | 5; // 1 good, 2 neutral, 3 sad/tired, 4 angry, 5 anxious
 export type ConnectionMode = "partner" | "mee";
 export type SharedItemKey =
   | "medTimes"

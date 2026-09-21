@@ -153,7 +153,11 @@ export const Select = forwardRef<
   React.SelectHTMLAttributes<HTMLSelectElement>
 >(function Select({ className = "", children, ...props }, ref) {
   return (
-    <select ref={ref} className={`${fieldBase} ${className}`} {...props}>
+    <select
+      ref={ref}
+      className={`${fieldBase} [&>option]:bg-plum-700 [&>option]:text-white ${className}`}
+      {...props}
+    >
       {children}
     </select>
   );

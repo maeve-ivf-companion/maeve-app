@@ -7,6 +7,7 @@ import { fmt } from "@/lib/i18n/format";
 import { PageHeader } from "@/components/app/PageHeader";
 import { PartnerBrief } from "@/components/app/PartnerBrief";
 import { Button, Card, Input, Label, Modal, Spinner, Textarea } from "@/components/ui";
+import { MOOD_OPTIONS, isHardMood } from "@/lib/moods";
 import type {
   ConnectionMode,
   MoodCheckin,
@@ -487,18 +488,15 @@ function MoodHistory({ patientId }: { patientId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId]);
 
-  const hardCount = checkins.filter((c) => c.mood === 3).length;
+  const hardCount = checkins.filter((c) => isHardMood(c.mood)).length;
   const hasPattern = checkins.length >= 4 && hardCount / checkins.length > 0.3;
 
   // A happy-face scale reads at a glance far better than plain color bars:
   // the face itself says "good/neutral/hard", and its height on the scale
   // reinforces it, instead of relying on someone parsing a bar's color.
-  const MOOD_FACE: Record<number, string> = { 1: "😊", 2: "😐", 3: "😔" };
-  const MOOD_COLOR: Record<number, string> = {
-    1: "bg-grow-500",
-    2: "bg-berry-300",
-    3: "bg-berry-500",
-  };
+  const MOOD_FACE = Object.fromEntries(MOOD_OPTIONS.map((m) => [m.mood, m.emoji]));
+  const MOOD_COLOR = Object.fromEntries(MOOD_OPTIONS.map((m) => [m.mood, m.dot]));
+  const MOOD_LEVEL = Object.fromEntries(MOOD_OPTIONS.map((m) => [m.mood, m.level]));
 
   return (
     <Card className="space-y-3">
@@ -517,7 +515,7 @@ function MoodHistory({ patientId }: { patientId: string }) {
               key={c.id}
               title={new Date(c.created_at).toLocaleDateString(lang)}
               className="flex shrink-0 flex-col items-center gap-1"
-              style={{ marginBottom: `${(3 - c.mood) * 16}px` }}
+              style={{ marginBottom: `${(MOOD_LEVEL[c.mood] ?? 0) * 16}px` }}
             >
               <span className="text-xl leading-none">{MOOD_FACE[c.mood]}</span>
               <span className={`h-1.5 w-1.5 rounded-full ${MOOD_COLOR[c.mood]}`} />

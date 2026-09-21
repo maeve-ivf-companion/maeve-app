@@ -102,7 +102,7 @@ async function buildPatientContext(
       ? `Next scheduled item: ${next.title} (${next.type}) on ${new Date(next.scheduled_at).toLocaleDateString()}`
       : "Nothing upcoming on their schedule right now.",
     moods && moods.length > 0
-      ? `Recent mood check-ins (1=good, 2=neutral, 3=hard): ${moods.map((m) => m.mood).join(", ")}`
+      ? `Recent mood check-ins (1=good, 2=neutral, 3=sad or tired, 4=angry, 5=anxious): ${moods.map((m) => m.mood).join(", ")}`
       : null,
   ].filter(Boolean);
 

@@ -5,11 +5,11 @@ import { useLanguage } from "@/lib/i18n/provider";
 import { HORMONE_COLOR, HORMONE_KEYS, HORMONE_REFERENCE, type HormoneKey } from "@/lib/hormones";
 import type { HormoneLog } from "@/lib/supabase/types";
 
-// The "all hormones at once" view. Different hormones use wildly different
-// units (pg/mL vs ng/mL) and scales, so plotting raw values on one axis
-// would be meaningless. Instead each reading is normalized to its own
-// typical range (0 = low end, 1 = high end), so every line shares one
-// honest axis: "where am I relative to what's typical for this hormone."
+// The "all hormones at once" view. Hormones use different units and scales
+// (pg/mL vs ng/mL) and no single "normal" fits all of them, so there is no
+// reference band here. Each hormone's readings are scaled to its own
+// lowest-to-highest logged value, which shows its direction over time; tap
+// a point to see the real value and that hormone's typical range.
 export function HormoneMultiTrendChart({
   logsByHormone,
 }: {
@@ -27,10 +27,12 @@ export function HormoneMultiTrendChart({
     const rows = [...(logsByHormone[hormone] ?? [])].sort((a, b) =>
       a.measured_on.localeCompare(b.measured_on)
     );
-    const ref = HORMONE_REFERENCE[hormone];
+    const values = rows.map((r) => r.value);
+    const min = Math.min(...values);
+    const max = Math.max(...values);
     const points = rows.map((log) => ({
       log,
-      norm: (log.value - ref.low) / (ref.high - ref.low),
+      norm: max === min ? 0.5 : (log.value - min) / (max - min),
     }));
     return { hormone, points };
   }).filter((s) => s.points.length > 0);
@@ -38,12 +40,8 @@ export function HormoneMultiTrendChart({
   const x = (i: number, count: number) =>
     count <= 1 ? W / 2 : padX + (i / (count - 1)) * (W - padX * 2);
   const yFromNorm = (n: number) => {
-    const clamped = Math.max(-0.3, Math.min(1.3, n));
-    return H - padY - ((clamped + 0.3) / 1.6) * (H - padY * 2);
+    return H - padY - n * (H - padY * 2);
   };
-
-  const bandTop = yFromNorm(1);
-  const bandBottom = yFromNorm(0);
 
   const activePoint = (() => {
     if (!selected) return null;
@@ -61,18 +59,6 @@ export function HormoneMultiTrendChart({
         role="img"
         aria-label="All hormones trend chart"
       >
-        <rect
-          x={0}
-          y={bandTop}
-          width={W}
-          height={Math.max(1, bandBottom - bandTop)}
-          fill="#4caf50"
-          fillOpacity={0.12}
-        />
-        <text x={W - padX} y={Math.max(10, bandTop - 4)} textAnchor="end" fontSize="8" fill="#81c784">
-          typical
-        </text>
-
         {series.map(({ hormone, points }) => {
           const path = points
             .map((p, i) => `${i === 0 ? "M" : "L"} ${x(i, points.length)} ${yFromNorm(p.norm)}`)
@@ -116,13 +102,16 @@ export function HormoneMultiTrendChart({
         <div
           className="pointer-events-none absolute -translate-x-1/2 -translate-y-full rounded-lg bg-plum-900 px-2.5 py-1.5 text-xs text-white shadow-lg"
           style={{
-            left: `${(x(selected!.index, activePoint.s.points.length) / W) * 100}%`,
+            left: `${Math.min(80, Math.max(20, (x(selected!.index, activePoint.s.points.length) / W) * 100))}%`,
             top: `${(yFromNorm(activePoint.p.norm) / H) * 100}%`,
             marginTop: -8,
           }}
         >
           <p className="font-semibold">
             {t.track.hormones[activePoint.s.hormone]}: {activePoint.p.log.value} {activePoint.p.log.unit}
+          </p>
+          <p className="text-faint">
+            {`typical ${HORMONE_REFERENCE[activePoint.s.hormone].low}–${HORMONE_REFERENCE[activePoint.s.hormone].high} ${HORMONE_REFERENCE[activePoint.s.hormone].unit}`}
           </p>
           <p className="text-faint">
             {new Date(activePoint.p.log.measured_on).toLocaleDateString(lang, {

@@ -77,7 +77,7 @@ export function HormoneTrendChart({
           fillOpacity={0.12}
         />
         <text x={W - padX} y={Math.max(10, bandTop - 4)} textAnchor="end" fontSize="8" fill="#81c784">
-          typical
+          {`typical ${low}–${high} ${unit}`}
         </text>
 
         {points.length > 0 && (
@@ -104,7 +104,7 @@ export function HormoneTrendChart({
       {active && (
         <div
           className="pointer-events-none absolute -translate-x-1/2 -translate-y-full rounded-lg bg-plum-900 px-2.5 py-1.5 text-xs text-white shadow-lg"
-          style={{ left: `${(active.x / W) * 100}%`, top: `${(active.y / H) * 100}%`, marginTop: -8 }}
+          style={{ left: `${Math.min(80, Math.max(20, (active.x / W) * 100))}%`, top: `${(active.y / H) * 100}%`, marginTop: -8 }}
         >
           <p className="font-semibold">
             {active.log.value} {unit}
